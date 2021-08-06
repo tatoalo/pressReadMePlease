@@ -1,0 +1,3 @@
+# cronjob for running the authentication procedure on a schedule
+* * * * * echo "Hello world" >> /var/log/cron.log 2>&1
+# cron validity requirement
