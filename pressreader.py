@@ -1,5 +1,5 @@
 import sys
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -15,20 +15,17 @@ def visit_pressreader(b, pressreader_auth=""):
     b.switch_to.window(tabs[1])
 
     try:
-        WebDriverWait(b, 5)
         publications_button = WebDriverWait(b, 15).until(
             EC.presence_of_element_located((By.XPATH, "//label[@data-bind='click: selectTitle']/button[@type='submit']"))
         )
         # publications_button = b.find_element_by_xpath("//label[@data-bind='click: selectTitle']/button[@type='submit']")
-        WebDriverWait(b, 2)
+        b.implicitly_wait(5)
         publications_button.click()
-        print("I have clicked publication button!")
-        # b.execute_script("arguments[0].click();", publications_button)
+
         login_pressreader(b, pressreader_auth)
 
-        # Waiting for 1 second before logging out
-        WebDriverWait(b, 1)
-        logout_pressreader(b)
+        # Waiting for 10 second before logging out
+        b.implicitly_wait(10)
 
     except NoSuchElementException:
         b.close()
@@ -37,16 +34,16 @@ def visit_pressreader(b, pressreader_auth=""):
 
 def login_pressreader(b, pressreader_auth):
     try:
-        print("Starting login procedure PR")
         username, password = pressreader_auth[0], pressreader_auth[1]
 
-        # login_icon = WebDriverWait(b, 10).until(
-        #     EC.presence_of_element_located((By.CLASS_NAME, "userphoto"))
-        # )
-        WebDriverWait(b, 2)
-        login_icon = b.find_element_by_xpath("///button[@aria-label='Log In']")
-
-        b.execute_script("arguments[0].click();", login_icon)
+        try:
+            login_icon = b.find_element_by_xpath("//button[@aria-label='Log In']")
+            login_icon.click()
+        except StaleElementReferenceException:
+            # DOM has been refreshed, let's force find it in order not to lose
+            # the reference pointer
+            login_icon = b.find_element_by_xpath("//button[@aria-label='Log In']")
+            login_icon.click()
 
         pressreader_id = b.find_element_by_xpath("//input[@type='email']")
         pressreader_psw = b.find_element_by_xpath("//input[@type='password']")
@@ -57,13 +54,10 @@ def login_pressreader(b, pressreader_auth):
         stay_signed_in_checkbox = b.find_element_by_xpath("//input[@type='checkbox']")
         b.execute_script("arguments[0].click();", stay_signed_in_checkbox)
 
-        submit_button = b.find_element_by_xpath("//a[@role='link']")
-        submit_button.click()
+        # Sign in procedure
+        submit_button = b.find_element_by_xpath("//div[@class='pop-group']/a[@role='link']")
+        b.execute_script("arguments[0].click();", submit_button)
 
     except NoSuchElementException:
         b.close()
         sys.exit(f"Element not found! {visit_pressreader.__name__}")
-
-
-def logout_pressreader(b):
-    return None

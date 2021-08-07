@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[]):
     b.get(mlol_entrypoint)
     perform_login(b, mlol_auth)
-    WebDriverWait(b, 2)
+    b.implicitly_wait(2)
     navigate_to_newspapers(b)
 
 
@@ -52,6 +52,5 @@ def navigate_to_newspapers(b):
         pressreader_submit_button.click()
 
     except NoSuchElementException:
-        print("Here")
         b.close()
         sys.exit(f"Element not found! {navigate_to_newspapers.__name__}")
