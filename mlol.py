@@ -1,6 +1,8 @@
 import sys
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[]):
@@ -35,7 +37,11 @@ def navigate_to_newspapers(b):
         typologies_menu_entry = b.find_element_by_xpath("//a[@id='caricatip']")
         typologies_menu_entry.click()
 
-        newspapers_section = b.find_element_by_partial_link_text("EDICOLA")
+        newspapers_section = WebDriverWait(b, 15).until(
+            EC.presence_of_element_located(
+                (By.PARTIAL_LINK_TEXT, "EDICOLA"))
+        )
+        # newspapers_section = b.find_element_by_partial_link_text("EDICOLA")
         b.execute_script("arguments[0].click();", newspapers_section)
 
         # Focusing on Corriere della Sera, safe bet for a pressreader presence
@@ -46,5 +52,6 @@ def navigate_to_newspapers(b):
         pressreader_submit_button.click()
 
     except NoSuchElementException:
+        print("Here")
         b.close()
         sys.exit(f"Element not found! {navigate_to_newspapers.__name__}")
