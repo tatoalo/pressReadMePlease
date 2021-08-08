@@ -13,6 +13,7 @@ def visit_pressreader(b, pressreader_auth=""):
     # switch is required for changing page objects reference
     tabs = b.window_handles
     b.switch_to.window(tabs[1])
+    print("Visiting Pressreader...")
 
     try:
         publications_button = WebDriverWait(b, 15).until(
@@ -34,6 +35,7 @@ def visit_pressreader(b, pressreader_auth=""):
 
 def login_pressreader(b, pressreader_auth):
     try:
+        print("Logging into Pressreader...")
         username, password = pressreader_auth[0], pressreader_auth[1]
 
         try:

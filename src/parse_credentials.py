@@ -7,8 +7,9 @@ import sys
 # password PRESSREADER account
 def extract_keys(path="auth_data.txt"):
     """
-    The file must be in the same working directory
-    of the Dockerfile, the following must be the format (each line with an information/credential):
+    The file must be in the same `src` working directory
+    of the other python files, the following must be the format (each line with an information/credential):
+        
         direct link of MLOL webpage (it depends to which library you're affiliated with)
         email address MLOL account
         password MLOL account
@@ -50,7 +51,7 @@ def extract_keys(path="auth_data.txt"):
             return entrypoint_mlol, mlol, pressreader
 
     except FileNotFoundError:
-        open("auth_data.txt", 'w')
+        open("/src/auth_data.txt", 'w')
         sys.exit("*** file doesn't exist, creating 'auth_data'"
                  " file, now fill it with data! ... exiting ***")
     except IndexError:

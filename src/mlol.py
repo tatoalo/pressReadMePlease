@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[]):
+    print("Visiting MLOL...")
     b.get(mlol_entrypoint)
     perform_login(b, mlol_auth)
     b.implicitly_wait(2)
@@ -14,6 +15,7 @@ def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[]):
 
 def perform_login(b, mlol_auth):
 
+    print("Logging into MLOL...")
     username, password = mlol_auth[0], mlol_auth[1]
 
     try:
