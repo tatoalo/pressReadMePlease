@@ -1,3 +1,4 @@
 # cronjob for running the authentication procedure on a schedule
-# * * * * * /usr/bin/python3 /src/main.py >> /var/log/pressreader-automation.log 2>&1
+# Pressreader automation flow will be executed every Friday at 5.30am
+30 5 * * 5 /usr/bin/python3 /src/main.py >> /var/log/pressreader-automation.log 2>&1
 # cron validity requirement

@@ -1,4 +1,5 @@
 import sys
+import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -9,7 +10,7 @@ def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[]):
     print("Visiting MLOL...")
     b.get(mlol_entrypoint)
     perform_login(b, mlol_auth)
-    b.implicitly_wait(2)
+    time.sleep(2)
     navigate_to_newspapers(b)
 
 

@@ -1,4 +1,5 @@
 import sys
+import time
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -19,34 +20,42 @@ def visit_pressreader(b, pressreader_auth=""):
         publications_button = WebDriverWait(b, 15).until(
             EC.presence_of_element_located((By.XPATH, "//label[@data-bind='click: selectTitle']/button[@type='submit']"))
         )
-        # publications_button = b.find_element_by_xpath("//label[@data-bind='click: selectTitle']/button[@type='submit']")
-        b.implicitly_wait(5)
+
         publications_button.click()
 
         login_pressreader(b, pressreader_auth)
 
-        # Waiting for 10 second before logging out
-        b.implicitly_wait(10)
+        # Waiting for 10 second before ceasing operations
+        time.sleep(10)
 
     except NoSuchElementException:
-        b.close()
-        sys.exit(f"Element not found! {visit_pressreader.__name__}")
+        try:
+            time.sleep(2)
+            publications_button = b.find_element_by_xpath("//label[@data-bind='click: selectTitle']/button[@type='submit']")
+            publications_button.click()
+        except NoSuchElementException:
+            b.close()
+            sys.exit(f"Element not found! {visit_pressreader.__name__}")
 
 
 def login_pressreader(b, pressreader_auth):
     try:
         print("Logging into Pressreader...")
+        time.sleep(5)
         username, password = pressreader_auth[0], pressreader_auth[1]
 
         try:
             login_icon = b.find_element_by_xpath("//button[@aria-label='Log In']")
             login_icon.click()
-        except StaleElementReferenceException:
+        except StaleElementReferenceException or NoSuchElementException:
             # DOM has been refreshed, let's force find it in order not to lose
             # the reference pointer
+            print("DOM has been refreshed, let's retry...")
+            time.sleep(2)
             login_icon = b.find_element_by_xpath("//button[@aria-label='Log In']")
             login_icon.click()
 
+        time.sleep(2)
         pressreader_id = b.find_element_by_xpath("//input[@type='email']")
         pressreader_psw = b.find_element_by_xpath("//input[@type='password']")
         pressreader_id.send_keys(username)
