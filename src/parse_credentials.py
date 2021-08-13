@@ -1,10 +1,6 @@
 import sys
 
-# direct link of MLOL webpage (it depends to which library you're affiliated with)
-# email address MLOL account
-# password MLOL account
-# email address PRESSREADER account
-# password PRESSREADER account
+
 def extract_keys(path="auth_data.txt"):
     """
     The file must be in the same `src` working directory
