@@ -33,7 +33,7 @@ def visit_pressreader(b, pressreader_auth=""):
             time.sleep(2)
             publications_button = b.find_element_by_xpath("//label[@data-bind='click: selectTitle']/button[@type='submit']")
             publications_button.click()
-        except NoSuchElementException:
+        except Exception:
             b.close()
             sys.exit(f"Element not found! {visit_pressreader.__name__}")
 
@@ -69,6 +69,6 @@ def login_pressreader(b, pressreader_auth):
         submit_button = b.find_element_by_xpath("//div[@class='pop-group']/a[@role='link']")
         b.execute_script("arguments[0].click();", submit_button)
 
-    except NoSuchElementException:
+    except Exception:
         b.close()
         sys.exit(f"Element not found! {visit_pressreader.__name__}")

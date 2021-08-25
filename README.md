@@ -53,7 +53,7 @@ $ cat auth_data.txt
 ```
 
 ### Watchtower support
-If you want, you can run this besides [Watchtower](https://github.com/containrrr/watchtower) which allows you to automatically keep all your images up-to-date.
+If you want, you can run this beside [Watchtower](https://github.com/containrrr/watchtower) which allows you to automatically keep all your images up-to-date.
 
 ## Clone the repo
 

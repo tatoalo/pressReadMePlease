@@ -11,11 +11,12 @@ def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[]):
     b.get(mlol_entrypoint)
     perform_login(b, mlol_auth)
     time.sleep(2)
+    verify_error_modal_presence(b)
+    time.sleep(1)
     navigate_to_newspapers(b)
 
 
 def perform_login(b, mlol_auth):
-
     print("Logging into MLOL...")
     username, password = mlol_auth[0], mlol_auth[1]
 
@@ -54,6 +55,21 @@ def navigate_to_newspapers(b):
         pressreader_submit_button = b.find_element_by_partial_link_text("SFOGLIA")
         pressreader_submit_button.click()
 
-    except NoSuchElementException:
+    except Exception as e:
         b.close()
         sys.exit(f"Element not found! {navigate_to_newspapers.__name__}")
+
+
+def verify_error_modal_presence(b):
+    try:
+        modal_outer_element = b.find_element_by_class_name("modal-content")
+        print("Modal found on MLOL entry")
+
+        # Retrieving modal dismissal button
+        modal_dismiss_button = b.find_element_by_xpath("//div[@class='modal-footer']/button[@data-dismiss='modal']")
+        modal_dismiss_button.click()
+        print("Modal dissmissed correctly!")
+
+    except NoSuchElementException:
+        # No modal found
+        pass
