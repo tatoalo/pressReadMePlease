@@ -21,7 +21,7 @@ By default the authentication token updating procedure will launch every Friday 
 You can [pull](https://hub.docker.com/r/tatoalo/pressreader-automation) the Docker image, subsequently launch the container with:
 
 ```
-docker run --name pressreader -itd   --restart unless-stopped --shm-size=256m tatoalo/pressreader-automation
+docker run --name pressreader -itd --restart unless-stopped --shm-size=256m tatoalo/pressreader-automation
 ```
 
 ### Authentication Data
