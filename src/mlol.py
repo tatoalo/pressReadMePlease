@@ -40,13 +40,12 @@ def perform_login(b, mlol_auth):
 
 
 def failed_login_procedure(b):
-
     try:
         warning_failed_login = b.find_element_by_xpath("//h1[@class='page-title']").text
         if 'avviso' in warning_failed_login.lower():
+            b.close()
             sys.exit("Login failed, please check your MLOL credentials!")
     except NoSuchElementException:
-        print("Login performed correctly")
         pass
 
 

@@ -7,7 +7,6 @@ from selenium.webdriver.common.by import By
 
 
 def visit_pressreader(b, pressreader_auth=""):
-
     # Switching to pressreader tab, target was `_blank' so I need
     # to iterate over the available handles, no biggie.
     # Being the targe `_blank` the focus tab is immediately pressreader,
@@ -18,7 +17,8 @@ def visit_pressreader(b, pressreader_auth=""):
 
     try:
         publications_button = WebDriverWait(b, 15).until(
-            EC.presence_of_element_located((By.XPATH, "//label[@data-bind='click: selectTitle']/button[@type='submit']"))
+            EC.presence_of_element_located(
+                (By.XPATH, "//label[@data-bind='click: selectTitle']/button[@type='submit']"))
         )
 
         publications_button.click()
@@ -31,7 +31,8 @@ def visit_pressreader(b, pressreader_auth=""):
     except NoSuchElementException:
         try:
             time.sleep(2)
-            publications_button = b.find_element_by_xpath("//label[@data-bind='click: selectTitle']/button[@type='submit']")
+            publications_button = b.find_element_by_xpath(
+                "//label[@data-bind='click: selectTitle']/button[@type='submit']")
             publications_button.click()
         except Exception:
             b.close()
@@ -69,6 +70,20 @@ def login_pressreader(b, pressreader_auth):
         submit_button = b.find_element_by_xpath("//div[@class='pop-group']/a[@role='link']")
         b.execute_script("arguments[0].click();", submit_button)
 
+        # Checking whether credentials were wrong
+        failed_login_procedure(b)
+
     except Exception:
         b.close()
         sys.exit(f"Element not found! {visit_pressreader.__name__}")
+
+
+def failed_login_procedure(b):
+    try:
+        time.sleep(2)
+        wrong_credentials_warning = b.find_element_by_xpath("//div[@class='infomsg']/p").text
+        if 'invalid' in wrong_credentials_warning.lower():
+            b.close()
+            sys.exit("Login failed, please check your Pressreader credentials!")
+    except NoSuchElementException:
+        pass
