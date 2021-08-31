@@ -4,9 +4,16 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from notify import Notifier
+
+NOTIFY = Notifier()
 
 
-def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[]):
+def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[], notification_service=None):
+    if notification_service is not None:
+        global NOTIFY
+        NOTIFY = notification_service
+
     print("Visiting MLOL...")
     b.get(mlol_entrypoint)
     perform_login(b, mlol_auth)
@@ -34,8 +41,9 @@ def perform_login(b, mlol_auth):
         # Checking failed login procedure
         failed_login_procedure(b)
 
-    except NoSuchElementException:
+    except Exception as e:
         b.close()
+        NOTIFY.send_message("Error in {perform_login.__name__} ; {e}")
         sys.exit(f"Element not found! {perform_login.__name__}")
 
 
@@ -44,6 +52,7 @@ def failed_login_procedure(b):
         warning_failed_login = b.find_element_by_xpath("//h1[@class='page-title']").text
         if 'avviso' in warning_failed_login.lower():
             b.close()
+            NOTIFY.send_message("Wrong MLOL credentials!")
             sys.exit("Login failed, please check your MLOL credentials!")
     except NoSuchElementException:
         pass
@@ -71,6 +80,7 @@ def navigate_to_newspapers(b):
 
     except Exception as e:
         b.close()
+        NOTIFY.send_message("Error in {navigate_to_newspapers.__name__} ; {e}")
         sys.exit(f"Element not found! {navigate_to_newspapers.__name__}")
 
 
@@ -78,6 +88,7 @@ def verify_error_modal_presence(b):
     try:
         modal_outer_element = b.find_element_by_class_name("modal-content")
         print("Modal found on MLOL entry")
+        NOTIFY.send_message("Modal found in MLOL")
 
         # Retrieving modal dismissal button
         modal_dismiss_button = b.find_element_by_xpath("//div[@class='modal-footer']/button[@data-dismiss='modal']")
