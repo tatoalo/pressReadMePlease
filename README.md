@@ -52,6 +52,19 @@ $ cat auth_data.txt
   testing2!
 ```
 
+### Telegram Notifications Support
+
+In order to receive telegram notifications about runtime errors, create a file named `notification_service.env` in the `src` folder.
+
+There are three variable needed for the notification system to work:
+```
+TELEGRAM_BASE_URL=https://api.telegram.org/bot
+TELEGRAM_TOKEN={YOUR_BOT_TOKEN}/
+TELEGRAM_CHAT_ID={CHANNEL_ID}
+```
+
+The environment variables file can be added with the aforementioned modalities, similarly to what could have been done with the authentication file.
+
 ### Watchtower support
 If you want, you can run this beside [Watchtower](https://github.com/containrrr/watchtower) which allows you to automatically keep all your images up-to-date.
 
