@@ -1,15 +1,22 @@
 import sys
 import time
+from notify import Notifier
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+NOTIFY = Notifier()
 
-def visit_pressreader(b, pressreader_auth=""):
+
+def visit_pressreader(b, pressreader_auth="", notification_service=None):
+    if notification_service is not None:
+        global NOTIFY
+        NOTIFY = notification_service
+
     # Switching to pressreader tab, target was `_blank' so I need
     # to iterate over the available handles, no biggie.
-    # Being the targe `_blank` the focus tab is immediately pressreader,
+    # Being the target `_blank` the focus tab is immediately pressreader,
     # switch is required for changing page objects reference
     tabs = b.window_handles
     b.switch_to.window(tabs[1])
@@ -34,8 +41,9 @@ def visit_pressreader(b, pressreader_auth=""):
             publications_button = b.find_element_by_xpath(
                 "//label[@data-bind='click: selectTitle']/button[@type='submit']")
             publications_button.click()
-        except Exception:
+        except Exception as e:
             b.close()
+            NOTIFY.send_message("Error in {visit_pressreader.__name__} ; {e}")
             sys.exit(f"Element not found! {visit_pressreader.__name__}")
 
 
@@ -73,9 +81,10 @@ def login_pressreader(b, pressreader_auth):
         # Checking whether credentials were wrong
         failed_login_procedure(b)
 
-    except Exception:
+    except Exception as e:
         b.close()
-        sys.exit(f"Element not found! {visit_pressreader.__name__}")
+        NOTIFY.send_message("Error in {login_pressreader.__name__} ; {e}")
+        sys.exit(f"Element not found! {login_pressreader.__name__}")
 
 
 def failed_login_procedure(b):
@@ -84,6 +93,7 @@ def failed_login_procedure(b):
         wrong_credentials_warning = b.find_element_by_xpath("//div[@class='infomsg']/p").text
         if 'invalid' in wrong_credentials_warning.lower():
             b.close()
+            NOTIFY.send_message("Wrong Pressreader credentials!")
             sys.exit("Login failed, please check your Pressreader credentials!")
     except NoSuchElementException:
         pass
