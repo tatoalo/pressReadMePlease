@@ -4,6 +4,8 @@ from pressreader import *
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchWindowException
 from selenium.webdriver.chrome.options import Options
+import os
+from dotenv import load_dotenv
 
 
 def init_chrome():
@@ -36,9 +38,9 @@ def main():
     mlol_link, mlol_credentials, pressreader_credentials = extract_keys(path="/src/auth_data.txt")
 
     b = init_chrome()
-    visit_MLOL(b, mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials)
-    visit_pressreader(b, pressreader_auth=pressreader_credentials)
-    print("*** Automation flow has terminated correctly ***")
+    # visit_MLOL(b, mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials)
+    # visit_pressreader(b, pressreader_auth=pressreader_credentials)
+    # print("*** Automation flow has terminated correctly ***")
     close_browser(b)
 
 
