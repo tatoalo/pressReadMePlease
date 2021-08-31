@@ -13,6 +13,7 @@ def init_chrome():
     opt_args.add_argument("--no-sandbox")
     opt_args.add_argument("--remote-debugging-port=9222")
     opt_args.add_argument("--headless")
+    opt_args.add_argument("--disable-dev-shm-usage")
     opt_args.add_argument("--window-size=1920,1080")
     opt_args.add_argument("--disable-gpu")
 

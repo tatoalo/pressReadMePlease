@@ -30,9 +30,23 @@ def perform_login(b, mlol_auth):
 
         submit_button.submit()
 
+        time.sleep(2)
+        # Checking failed login procedure
+        failed_login_procedure(b)
+
     except NoSuchElementException:
         b.close()
         sys.exit(f"Element not found! {perform_login.__name__}")
+
+
+def failed_login_procedure(b):
+    try:
+        warning_failed_login = b.find_element_by_xpath("//h1[@class='page-title']").text
+        if 'avviso' in warning_failed_login.lower():
+            b.close()
+            sys.exit("Login failed, please check your MLOL credentials!")
+    except NoSuchElementException:
+        pass
 
 
 def navigate_to_newspapers(b):
