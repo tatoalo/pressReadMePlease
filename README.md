@@ -70,5 +70,5 @@ If you want, you can run this beside [Watchtower](https://github.com/containrrr/
 
 ## Clone the repo
 
-You can clone the repo and launch it as is (requires *Chrome/Chromium, chromedriver + selenium*). 
+You can clone the repo and launch it as is (requires *Chrome/Chromium, chromedriver + selenium + requests*). 
 
