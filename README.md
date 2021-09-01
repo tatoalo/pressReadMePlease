@@ -52,7 +52,7 @@ $ cat auth_data.txt
   testing2!
 ```
 
-### Telegram Notifications Support
+### Telegram Notifications Support (optional)
 
 In order to receive telegram notifications about runtime errors, create a file named `notification_service.env` in the `src` folder.
 
