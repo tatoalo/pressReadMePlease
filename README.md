@@ -52,7 +52,7 @@ $ cat auth_data.txt
   testing2!
 ```
 
-### Telegram Notifications Support
+### Telegram Notifications Support (optional)
 
 In order to receive telegram notifications about runtime errors, create a file named `notification_service.env` in the `src` folder.
 
@@ -70,5 +70,5 @@ If you want, you can run this beside [Watchtower](https://github.com/containrrr/
 
 ## Clone the repo
 
-You can clone the repo and launch it as is (requires *Chrome/Chromium, chromedriver + selenium*). 
+You can clone the repo and launch it as is (requires *Chrome/Chromium, chromedriver + selenium + requests*). 
 
