@@ -43,7 +43,7 @@ def perform_login(b, mlol_auth):
 
     except Exception as e:
         b.close()
-        NOTIFY.send_message("Error in {perform_login.__name__} ; {e}")
+        NOTIFY.send_message(f"Error in {perform_login.__name__} ; {e}")
         sys.exit(f"Element not found! {perform_login.__name__}")
 
 
@@ -80,7 +80,7 @@ def navigate_to_newspapers(b):
 
     except Exception as e:
         b.close()
-        NOTIFY.send_message("Error in {navigate_to_newspapers.__name__} ; {e}")
+        NOTIFY.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
         sys.exit(f"Element not found! {navigate_to_newspapers.__name__}")
 
 
