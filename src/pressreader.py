@@ -43,7 +43,7 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
             publications_button.click()
         except Exception as e:
             b.close()
-            NOTIFY.send_message("Error in {visit_pressreader.__name__} ; {e}")
+            NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
             sys.exit(f"Element not found! {visit_pressreader.__name__}")
 
 
@@ -54,7 +54,7 @@ def login_pressreader(b, pressreader_auth):
         username, password = pressreader_auth[0], pressreader_auth[1]
 
         try:
-            login_icon = b.find_element_by_xpath("//button[@aria-label='Log In']")
+            login_icon = b.find_element_by_xpath("//button[@class='btn btn-account']")
             login_icon.click()
         except StaleElementReferenceException or NoSuchElementException:
             # DOM has been refreshed, let's force find it in order not to lose
@@ -83,7 +83,7 @@ def login_pressreader(b, pressreader_auth):
 
     except Exception as e:
         b.close()
-        NOTIFY.send_message("Error in {login_pressreader.__name__} ; {e}")
+        NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
         sys.exit(f"Element not found! {login_pressreader.__name__}")
 
 

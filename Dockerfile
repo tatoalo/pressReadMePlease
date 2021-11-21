@@ -5,9 +5,13 @@ RUN apk add chromium --repository=http://dl-cdn.alpinelinux.org/alpine/v3.14/mai
 RUN apk add chromium-chromedriver
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
+RUN apk add --no-cache --virtual .pynacl_deps build-base python3-dev libffi-dev
 RUN pip3 install selenium
 RUN pip3 install requests
 RUN pip3 install python-dotenv
+
+# Trimming for reducing overall image size
+RUN apk del .pynacl_deps
 
 ADD src/*.py src/
 

@@ -3,6 +3,7 @@ from notify import Notifier
 
 NOTIFY = Notifier()
 
+
 def extract_keys(path="auth_data.txt", notification_service=None):
     """
     The file must be in the same `src` working directory
