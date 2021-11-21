@@ -1,10 +1,5 @@
 FROM alpine:3.14
 
-# Updating the repositories
-#RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" > /etc/apk/repositories
-#RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
-#RUN apk update
-
 RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN apk add chromium --repository=http://dl-cdn.alpinelinux.org/alpine/v3.14/main
 RUN apk add chromium-chromedriver
