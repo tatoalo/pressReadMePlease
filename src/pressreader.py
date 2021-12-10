@@ -53,16 +53,13 @@ def login_pressreader(b, pressreader_auth):
         time.sleep(5)
         username, password = pressreader_auth[0], pressreader_auth[1]
 
-        try:
-            login_icon = b.find_element_by_xpath("//button[@class='btn btn-account']")
+        login_icon = locate_login_button(b)
+        if login_icon:
             login_icon.click()
-        except StaleElementReferenceException or NoSuchElementException:
-            # DOM has been refreshed, let's force find it in order not to lose
-            # the reference pointer
-            print("DOM has been refreshed, let's retry...")
-            time.sleep(2)
-            login_icon = b.find_element_by_xpath("//button[@aria-label='Log In']")
-            login_icon.click()
+        else:
+            b.close()
+            NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; Login icon not found!")
+            sys.exit(f"Element not found! {login_pressreader.__name__} ; Login icon not found!")
 
         time.sleep(2)
         pressreader_id = b.find_element_by_xpath("//input[@type='email']")
@@ -85,6 +82,25 @@ def login_pressreader(b, pressreader_auth):
         b.close()
         NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
+
+
+# Moved logic to specific method in order to better handle the two existing cases found so far
+def locate_login_button(b):
+    login_icon = None
+
+    try:
+        login_icon = b.find_element_by_xpath("//button[@class='btn btn-login']")
+    except NoSuchElementException:
+        try:
+            login_icon = b.find_element_by_xpath("//button[@class='btn btn-account']")
+        except StaleElementReferenceException:
+            # DOM has been refreshed, let's force find it in order not to lose
+            # the reference pointer
+            print("DOM has been refreshed, let's retry...")
+            time.sleep(2)
+            login_icon = b.find_element_by_xpath("//button[@class='btn btn-login']")
+
+    return login_icon
 
 
 def failed_login_procedure(b):
