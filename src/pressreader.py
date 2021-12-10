@@ -44,7 +44,7 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
         except Exception as e:
             b.close()
             NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
-            sys.exit(f"Element not found! {visit_pressreader.__name__}")
+            sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
 
 
 def login_pressreader(b, pressreader_auth):
@@ -84,7 +84,7 @@ def login_pressreader(b, pressreader_auth):
     except Exception as e:
         b.close()
         NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
-        sys.exit(f"Element not found! {login_pressreader.__name__}")
+        sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
 
 
 def failed_login_procedure(b):
