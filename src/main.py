@@ -10,8 +10,8 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchWindowException
 from selenium.webdriver.chrome.options import Options
 
-
-env_path = Path("/src/notification_service.env")
+PROJECT_ROOT = Path(__file__).parent
+env_path = Path(PROJECT_ROOT / "notification_service.env")
 if env_path.is_file():
     load_dotenv(dotenv_path=env_path)
     TELEGRAM_BASE_URL = os.getenv('TELEGRAM_BASE_URL')
@@ -50,7 +50,7 @@ def close_browser(b):
 def main():
 
     # Retrieve credentials and MLOL entrypoint
-    mlol_link, mlol_credentials, pressreader_credentials = extract_keys(path="/src/auth_data.txt", notification_service=NOTIFY)
+    mlol_link, mlol_credentials, pressreader_credentials = extract_keys(path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY)
 
     b = init_chrome()
     visit_MLOL(b, mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials, notification_service=NOTIFY)
