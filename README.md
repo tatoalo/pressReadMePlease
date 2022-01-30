@@ -5,7 +5,8 @@
   
   A process for automating PressReader weekly token automagically.
   <br/><br/>
-  
+  [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/tatoalo)
+  <br/><br/>
   [![MIT](https://img.shields.io/github/license/tatoalo/pressReadMePlease)](https://github.com/tatoalo/pressReadMePlease)
   [![Pulls from DockerHub](https://img.shields.io/docker/pulls/tatoalo/pressreader-automation.svg)](https://hub.docker.com/r/tatoalo/pressreader-automation)
 </div>
@@ -71,4 +72,3 @@ If you want, you can run this beside [Watchtower](https://github.com/containrrr/
 ## Clone the repo
 
 You can clone the repo and launch it as is (requires *Chrome/Chromium, chromedriver + selenium + requests*). 
-
