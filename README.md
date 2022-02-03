@@ -5,7 +5,7 @@
   
   A process for automating PressReader weekly token automagically.
   <br/><br/>
-  [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/tatoalo)
+  [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
   <br/><br/>
   [![MIT](https://img.shields.io/github/license/tatoalo/pressReadMePlease)](https://github.com/tatoalo/pressReadMePlease)
   [![Pulls from DockerHub](https://img.shields.io/docker/pulls/tatoalo/pressreader-automation.svg)](https://hub.docker.com/r/tatoalo/pressreader-automation)
