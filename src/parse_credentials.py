@@ -1,4 +1,5 @@
 import sys
+
 from notify import Notifier
 
 NOTIFY = Notifier()

@@ -1,11 +1,13 @@
-from parse_credentials import extract_keys
-from mlol import visit_MLOL
-from pressreader import visit_pressreader
-from notify import Notifier
 import os
 import sys
-from pathlib import Path
+
+from mlol import visit_MLOL
+from notify import Notifier
+from parse_credentials import extract_keys
+from pressreader import visit_pressreader
+
 from dotenv import load_dotenv
+from pathlib import Path
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchWindowException
 from selenium.webdriver.chrome.options import Options

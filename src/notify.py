@@ -1,4 +1,3 @@
-# Telegram notification support
 import requests
 
 

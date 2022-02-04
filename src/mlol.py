@@ -1,10 +1,13 @@
 import sys
 import time
+
+from notify import Notifier
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from notify import Notifier
+
 
 NOTIFY = Notifier()
 
