@@ -1,7 +1,8 @@
 import sys
 import time
 
-from src.notify import Notifier
+from notify import Notifier
+from screenshot import Screenshot
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By

@@ -1,4 +1,8 @@
-from src.pressreadmeplease import init_chrome, close_browser, PROJECT_ROOT
+try:
+    from src.pressreadmeplease import init_chrome, close_browser, PROJECT_ROOT
+except ImportError:
+    from .src.pressreadmeplease import init_chrome, close_browser, PROJECT_ROOT
+
 from src.screenshot import Screenshot, ScreenshotNotTaken
 
 import unittest
