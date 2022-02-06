@@ -50,7 +50,6 @@ def close_browser(b):
 
 
 def main():
-
     # Retrieve credentials and MLOL entrypoint
     mlol_link, mlol_credentials, pressreader_credentials = extract_keys(path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY)
 

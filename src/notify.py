@@ -14,7 +14,7 @@ class Notifier:
     def send_message(self, message):
         if self.disabled is False:
             payload = {'chat_id': self.chat_id, 'text': message}
-            r = requests.post(self.api_url + 'sendMessage', data=payload)
+            requests.post(self.api_url + 'sendMessage', data=payload)
 
     def send_image(self, images_urls):
         if self.disabled is False:
@@ -23,4 +23,4 @@ class Notifier:
                 ('photo', open(images_urls, 'rb'))
             ]
             headers = {}
-            r = requests.post(self.api_url + 'sendPhoto', data=payload, files=files)
+            requests.post(self.api_url + 'sendPhoto', data=payload, files=files)
