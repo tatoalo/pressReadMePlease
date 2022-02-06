@@ -1,11 +1,11 @@
 import os
 import sys
 
-from mlol import visit_MLOL
-from notify import Notifier
-from screenshot import Screenshot
-from parse_credentials import extract_keys
-from pressreader import visit_pressreader
+from src.mlol import visit_MLOL
+from src.notify import Notifier
+from src.screenshot import Screenshot
+from src.parse_credentials import extract_keys
+from src.pressreader import visit_pressreader
 
 from dotenv import load_dotenv
 from pathlib import Path

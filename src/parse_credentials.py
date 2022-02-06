@@ -1,6 +1,6 @@
 import sys
 
-from notify import Notifier
+from src.notify import Notifier
 
 NOTIFY = Notifier()
 

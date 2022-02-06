@@ -1,6 +1,6 @@
 import sys
 import time
-from notify import Notifier
+from src.notify import Notifier
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
