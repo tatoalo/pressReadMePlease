@@ -2,7 +2,7 @@ import requests
 
 
 class Notifier:
-    def __init__(self, url=None, token=None, chat_id=None):
+    def __init__(self, url=None, token=None, chat_id=None, screenshot_client=None):
         if url is not None and token is not None:
             self.api_url = url+token
             self.disabled = False
@@ -10,6 +10,7 @@ class Notifier:
             self.api_url = ""
             self.disabled = True
         self.chat_id = chat_id
+        self.screenshot_client = screenshot_client
 
     def send_message(self, message):
         if self.disabled is False:
