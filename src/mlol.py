@@ -2,6 +2,7 @@ import sys
 import time
 
 from notify import Notifier
+from screenshot import Screenshot
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -45,8 +46,11 @@ def perform_login(b, mlol_auth):
         failed_login_procedure(b)
 
     except Exception as e:
+        if not NOTIFY.disabled:
+            NOTIFY.send_message(f"Error in {perform_login.__name__} ; {e}")
+            NOTIFY.screenshot_client.take_screenshot('example')
+            NOTIFY.screenshot_client.remove_screenshot()
         b.close()
-        NOTIFY.send_message(f"Error in {perform_login.__name__} ; {e}")
         sys.exit(f"Element not found! {perform_login.__name__} ; {e}")
 
 
@@ -55,7 +59,8 @@ def failed_login_procedure(b):
         warning_failed_login = b.find_element_by_xpath("//h1[@class='page-title']").text
         if 'avviso' in warning_failed_login.lower():
             b.close()
-            NOTIFY.send_message("Wrong MLOL credentials!")
+            if not NOTIFY.disabled:
+                NOTIFY.send_message("Wrong MLOL credentials!")
             sys.exit("Login failed, please check your MLOL credentials!")
     except NoSuchElementException:
         pass
@@ -82,8 +87,11 @@ def navigate_to_newspapers(b):
         pressreader_submit_button.click()
 
     except Exception as e:
+        if not NOTIFY.disabled:
+            NOTIFY.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
+            NOTIFY.screenshot_client.take_screenshot('example')
+            NOTIFY.screenshot_client.remove_screenshot()
         b.close()
-        NOTIFY.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
         sys.exit(f"Element not found! {navigate_to_newspapers.__name__} ; {e}")
 
 

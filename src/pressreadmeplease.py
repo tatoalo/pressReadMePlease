@@ -3,6 +3,7 @@ import sys
 
 from mlol import visit_MLOL
 from notify import Notifier
+from screenshot import Screenshot
 from parse_credentials import extract_keys
 from pressreader import visit_pressreader
 
@@ -21,6 +22,7 @@ if env_path.is_file():
     TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID') 
 
     NOTIFY = Notifier(TELEGRAM_BASE_URL, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
+    NOTIFY.screenshot_client = Screenshot(NOTIFY, path=PROJECT_ROOT)
 else:
     NOTIFY = Notifier()
 
@@ -37,6 +39,9 @@ def init_chrome():
     opt_args.add_argument("--disable-gpu")
 
     b = webdriver.Chrome(options=opt_args)
+
+    if NOTIFY.disabled is False:
+        NOTIFY.screenshot_client.browser = b
 
     return b
 
