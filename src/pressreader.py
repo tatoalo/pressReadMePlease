@@ -1,7 +1,7 @@
 import sys
 import time
 from notify import Notifier
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -23,7 +23,7 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
     print("Visiting Pressreader...")
 
     try:
-        publications_button = WebDriverWait(b, 15).until(
+        publications_button = WebDriverWait(b, 5).until(
             EC.presence_of_element_located(
                 (By.XPATH, "//label[@data-bind='click: selectTitle']/button[@type='submit']"))
         )
@@ -35,6 +35,8 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
         # Waiting for 10 second before ceasing operations
         time.sleep(10)
 
+    except TimeoutException:
+        login_pressreader(b, pressreader_auth)
     except NoSuchElementException:
         try:
             time.sleep(2)
@@ -42,8 +44,11 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
                 "//label[@data-bind='click: selectTitle']/button[@type='submit']")
             publications_button.click()
         except Exception as e:
+            if not NOTIFY.disabled:
+                NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
+                NOTIFY.screenshot_client.take_screenshot('example')
+                NOTIFY.screenshot_client.remove_screenshot()
             b.close()
-            NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
             sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
 
 
@@ -79,8 +84,11 @@ def login_pressreader(b, pressreader_auth):
         failed_login_procedure(b)
 
     except Exception as e:
+        if not NOTIFY.disabled:
+            NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
+            NOTIFY.screenshot_client.take_screenshot('example')
+            NOTIFY.screenshot_client.remove_screenshot()
         b.close()
-        NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
 
 

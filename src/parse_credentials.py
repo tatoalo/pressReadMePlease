@@ -1,4 +1,5 @@
 import sys
+
 from notify import Notifier
 
 NOTIFY = Notifier()
@@ -23,11 +24,10 @@ def extract_keys(path="auth_data.txt", notification_service=None):
         test2@test.com
         testing2!
 
-       Parameters:
-       path (str): path to authorization file
+        :param path:                                path to authorization file
+        :param notification_service:                Notifier object
 
-       Returns:
-       str tuple, str tuple, str tuple:mlol link, mlol credentials, pressreader credentials
+        :return str tuple, str tuple, str tuple     mlol link, mlol credentials, pressreader credentials
       """
 
     if notification_service is not None:
