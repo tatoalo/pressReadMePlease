@@ -53,7 +53,7 @@ $ cat auth_data.txt
   testing2!
 ```
 
-### Telegram Notifications Support (optional)
+### Telegram Notifications & Screenshot Support (optional)
 
 In order to receive telegram notifications about runtime errors, create a file named `notification_service.env` in the `src` folder.
 
@@ -63,6 +63,9 @@ TELEGRAM_BASE_URL=https://api.telegram.org/bot
 TELEGRAM_TOKEN={YOUR_BOT_TOKEN}/
 TELEGRAM_CHAT_ID={CHANNEL_ID}
 ```
+
+Additionally, support for attaching screenshots has also been implemented.
+This action makes sense just in certain flows (missing button that was expected to be found) and will be sent in addition to the error message.
 
 The environment variables file can be added with the aforementioned modalities, similarly to what could have been done with the authentication file.
 
