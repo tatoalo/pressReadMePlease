@@ -30,12 +30,12 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
                 (By.XPATH, "//label[@data-bind='click: selectTitle']/button[@type='submit']"))
         )
 
-        publications_button.click()
+        b.execute_script("arguments[0].click();", publications_button)
 
         login_pressreader(b, pressreader_auth)
 
-        # Waiting for 10 second before ceasing operations
-        time.sleep(10)
+        # Waiting for 3 second before ceasing operations
+        time.sleep(3)
 
     except TimeoutException:
         login_pressreader(b, pressreader_auth)
@@ -44,7 +44,7 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
             time.sleep(2)
             publications_button = b.find_element_by_xpath(
                 "//label[@data-bind='click: selectTitle']/button[@type='submit']")
-            publications_button.click()
+            b.execute_script("arguments[0].click();", publications_button)
         except Exception as e:
             if not NOTIFY.disabled:
                 NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
@@ -62,7 +62,7 @@ def login_pressreader(b, pressreader_auth):
 
         login_icon = locate_login_button(b)
         if login_icon:
-            login_icon.click()
+            b.execute_script("arguments[0].click();", login_icon)
         else:
             b.quit()
             NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; Login icon not found!")
