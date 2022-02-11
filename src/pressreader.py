@@ -50,7 +50,7 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
                 NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
                 NOTIFY.screenshot_client.take_screenshot('error')
                 NOTIFY.screenshot_client.remove_screenshot()
-            b.close()
+            b.quit()
             sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
 
 
@@ -64,7 +64,7 @@ def login_pressreader(b, pressreader_auth):
         if login_icon:
             login_icon.click()
         else:
-            b.close()
+            b.quit()
             NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; Login icon not found!")
             sys.exit(f"Element not found! {login_pressreader.__name__} ; Login icon not found!")
 
@@ -90,7 +90,7 @@ def login_pressreader(b, pressreader_auth):
             NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
             NOTIFY.screenshot_client.take_screenshot('error')
             NOTIFY.screenshot_client.remove_screenshot()
-        b.close()
+        b.quit()
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
 
 
