@@ -47,11 +47,8 @@ def init_chrome():
 
 
 def close_browser(b):
-    try:
-        print("Terminating Chrome...")
-        b.close()
-    except NoSuchWindowException:
-        sys.exit("Browser already closed.")
+    print("Terminating Chrome...")
+    b.quit()
 
 
 def main():

@@ -4,6 +4,7 @@
 .idea/
 *.env
 Makefile
+Dockerfile_*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
