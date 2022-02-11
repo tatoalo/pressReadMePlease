@@ -47,7 +47,7 @@ def perform_login(b, mlol_auth):
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {perform_login.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot('example')
+            NOTIFY.screenshot_client.take_screenshot('error')
             NOTIFY.screenshot_client.remove_screenshot()
         b.close()
         sys.exit(f"Element not found! {perform_login.__name__} ; {e}")
@@ -88,7 +88,7 @@ def navigate_to_newspapers(b):
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot('example')
+            NOTIFY.screenshot_client.take_screenshot('error')
             NOTIFY.screenshot_client.remove_screenshot()
         b.close()
         sys.exit(f"Element not found! {navigate_to_newspapers.__name__} ; {e}")

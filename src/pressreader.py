@@ -48,7 +48,7 @@ def visit_pressreader(b, pressreader_auth="", notification_service=None):
         except Exception as e:
             if not NOTIFY.disabled:
                 NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
-                NOTIFY.screenshot_client.take_screenshot('example')
+                NOTIFY.screenshot_client.take_screenshot('error')
                 NOTIFY.screenshot_client.remove_screenshot()
             b.close()
             sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
@@ -88,7 +88,7 @@ def login_pressreader(b, pressreader_auth):
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot('example')
+            NOTIFY.screenshot_client.take_screenshot('error')
             NOTIFY.screenshot_client.remove_screenshot()
         b.close()
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
