@@ -8,7 +8,7 @@ from pressreader import visit_pressreader
 
 from dotenv import load_dotenv
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, Browser
 
 
 PROJECT_ROOT = Path(__file__).parent
@@ -35,6 +35,7 @@ def init_chromium():
         traces_dir=PROJECT_ROOT
     )
     page = b.new_page()
+    page.set_default_timeout(10000)
     page.set_viewport_size(viewport_size={
         "width": 1920,
         "height": 1080}
@@ -43,10 +44,10 @@ def init_chromium():
     if NOTIFY.disabled is False:
         NOTIFY.screenshot_client.browser = b
 
-    return b
+    return b, page
 
 
-def close_browser(b):
+def close_browser(b: Browser):
     print("Terminating Chrome...")
     b.close()
 
@@ -55,9 +56,9 @@ def main():
     # Retrieve credentials and MLOL entrypoint
     mlol_link, mlol_credentials, pressreader_credentials = extract_keys(path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY)
 
-    b = init_chromium()
-    visit_MLOL(b, mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials, notification_service=NOTIFY)
-    visit_pressreader(b, pressreader_auth=pressreader_credentials, notification_service=NOTIFY)
+    b, page = init_chromium()
+    visit_MLOL(b, page, mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials, notification_service=NOTIFY)
+    # visit_pressreader(b, pressreader_auth=pressreader_credentials, notification_service=NOTIFY)
     print("*** Automation flow has terminated correctly ***")
     close_browser(b)
 
