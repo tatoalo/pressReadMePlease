@@ -19,7 +19,10 @@ def visit_MLOL(b: Browser, page: Page, mlol_entrypoint: str = "", mlol_auth: Lis
 
     perform_login(b, page, mlol_auth)
     verify_error_modal_presence(page)
-    navigate_to_newspapers(b, page)
+    new_page_tab = navigate_to_newspapers(b, page)
+
+    breakpoint()
+    return new_page_tab
 
 
 def perform_login(b: Browser, page: Page, mlol_auth: List[str]):
@@ -70,7 +73,15 @@ def navigate_to_newspapers(b: Browser, page: Page):
         corriere_sera.nth(0).click()
 
         pressreader_submit_button = page.locator(":nth-match(:text('SFOGLIA'), 1)")
-        pressreader_submit_button.click()
+
+        with page.expect_popup() as pressreader_blank_target:
+            pressreader_submit_button.click()
+        page_pressreader = pressreader_blank_target.value
+        page_pressreader.wait_for_load_state("domcontentloaded")
+
+        assert 'pressreader' in page_pressreader.title().lower(), Exception("Failed tab switch")
+
+        return page_pressreader
 
     except Exception as e:
         if not NOTIFY.disabled:
