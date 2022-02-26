@@ -25,7 +25,7 @@ else:
     NOTIFY = Notifier()
 
 
-def init_chrome():
+def init_chromium():
     print("Launching Chrome...")
 
     p = sync_playwright().start()
@@ -55,7 +55,7 @@ def main():
     # Retrieve credentials and MLOL entrypoint
     mlol_link, mlol_credentials, pressreader_credentials = extract_keys(path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY)
 
-    b = init_chrome()
+    b = init_chromium()
     visit_MLOL(b, mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials, notification_service=NOTIFY)
     visit_pressreader(b, pressreader_auth=pressreader_credentials, notification_service=NOTIFY)
     print("*** Automation flow has terminated correctly ***")

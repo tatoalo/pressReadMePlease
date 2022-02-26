@@ -1,5 +1,5 @@
 try:
-    from src.pressreadmeplease import init_chrome, close_browser, PROJECT_ROOT
+    from src.pressreadmeplease import init_chromium, close_browser, PROJECT_ROOT
 except ImportError:
     from .src.pressreadmeplease import init_chrome, close_browser, PROJECT_ROOT
 
@@ -14,7 +14,7 @@ class TestScreenshot(unittest.TestCase):
 
     @mock.patch('src.notify.Notifier')
     def setUp(self, mock_notifier) -> None:
-        self.browser = init_chrome()
+        self.browser = init_chromium()
         self.screenshot = Screenshot(notifier=mock_notifier, path=PROJECT_ROOT, browser=self.browser)
 
     def tearDown(self) -> None:
