@@ -31,20 +31,22 @@ def init_chromium():
     p = sync_playwright().start()
     b = p.chromium.launch(
         headless=False,
-        slow_mo=5000,
         traces_dir=PROJECT_ROOT
     )
     page = b.new_page()
-    page.set_default_timeout(10000)
-    page.set_viewport_size(viewport_size={
-        "width": 1920,
-        "height": 1080}
-    )
+    config_page(page, timeout=10000)
 
     if NOTIFY.disabled is False:
         NOTIFY.screenshot_client.browser = b
 
     return b, page
+
+
+def config_page(page: Page, timeout: int = 0, window_size=None):
+    if window_size is None or not window_size.get('width') or not window_size.get('height'):
+        window_size = {"width": 1920, "height": 1080}
+    page.set_default_timeout(timeout)
+    page.set_viewport_size(viewport_size=window_size)
 
 
 def close_browser(b: Browser):
@@ -57,8 +59,14 @@ def main():
     mlol_link, mlol_credentials, pressreader_credentials = extract_keys(path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY)
 
     b, page = init_chromium()
-    visit_MLOL(b, page, mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials, notification_service=NOTIFY)
-    # visit_pressreader(b, pressreader_auth=pressreader_credentials, notification_service=NOTIFY)
+    pressreader_tab = visit_MLOL(
+        b,
+        page,
+        mlol_entrypoint=mlol_link,
+        mlol_auth=mlol_credentials,
+        notification_service=NOTIFY
+    )
+    visit_pressreader(b, page=pressreader_tab, pressreader_auth=pressreader_credentials, notification_service=NOTIFY)
     print("*** Automation flow has terminated correctly ***")
     close_browser(b)
 
