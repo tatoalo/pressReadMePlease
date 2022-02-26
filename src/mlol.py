@@ -1,88 +1,75 @@
 import sys
-import time
 
 from notify import Notifier
-
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from typing import List
+from playwright.sync_api import Browser, Page
+from playwright.sync_api import TimeoutError
 
 
 NOTIFY = Notifier()
 
 
-def visit_MLOL(b, mlol_entrypoint="", mlol_auth=[], notification_service=None):
+def visit_MLOL(b: Browser, page: Page, mlol_entrypoint: str = "", mlol_auth: List[str] = [], notification_service: Notifier = None):
     if notification_service is not None:
         global NOTIFY
         NOTIFY = notification_service
 
     print("Visiting MLOL...")
-    b.get(mlol_entrypoint)
-    perform_login(b, mlol_auth)
-    time.sleep(2)
-    verify_error_modal_presence(b)
-    time.sleep(1)
-    navigate_to_newspapers(b)
+    page.goto(mlol_entrypoint, timeout=0)
+
+    perform_login(b, page, mlol_auth)
+    verify_error_modal_presence(page)
+    navigate_to_newspapers(b, page)
 
 
-def perform_login(b, mlol_auth):
+def perform_login(b: Browser, page: Page, mlol_auth: List[str]):
     print("Logging into MLOL...")
     username, password = mlol_auth[0], mlol_auth[1]
 
     try:
-        mlol_id = b.find_element_by_id("lusername")
-        mlol_psw = b.find_element_by_id("lpassword")
-        submit_button = b.find_element_by_xpath("//input[@type='submit']")
+        page.fill("input[name='lusername']", username, timeout=0)
+        page.fill("input[name='lpassword']", password, timeout=0)
 
-        mlol_id.send_keys(username)
-        mlol_psw.send_keys(password)
+        page.click("input[type='submit']", timeout=0)
 
-        submit_button.submit()
-
-        time.sleep(2)
         # Checking failed login procedure
-        failed_login_procedure(b)
+        failed_login_procedure(b, page)
 
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {perform_login.__name__} ; {e}")
             NOTIFY.screenshot_client.take_screenshot('error')
             NOTIFY.screenshot_client.remove_screenshot()
-        b.quit()
+        b.close()
         sys.exit(f"Element not found! {perform_login.__name__} ; {e}")
 
 
-def failed_login_procedure(b):
+def failed_login_procedure(b: Browser, page: Page):
     try:
-        warning_failed_login = b.find_element_by_xpath("//h1[@class='page-title']").text
-        if 'avviso' in warning_failed_login.lower():
-            b.quit()
+        warning_failed_login = page.text_content(".page-title").lower()
+        if 'avviso' in warning_failed_login:
+            b.close()
             if not NOTIFY.disabled:
                 NOTIFY.send_message("Wrong MLOL credentials!")
             sys.exit("Login failed, please check your MLOL credentials!")
-    except NoSuchElementException:
+    except TimeoutError:
         pass
 
 
-def navigate_to_newspapers(b):
+def navigate_to_newspapers(b: Browser, page: Page):
     try:
         # Clicking on catalogue
-        typologies_menu_entry = b.find_element_by_xpath("//a[@id='caricatip']")
-        typologies_menu_entry.click()
+        typologies_menu_entry = page.query_selector("#caricatip")
+        typologies_menu_entry.click(timeout=0)
 
-        newspapers_section = WebDriverWait(b, 15).until(
-            EC.presence_of_element_located(
-                (By.PARTIAL_LINK_TEXT, "EDICOLA"))
-        )
-        # newspapers_section = b.find_element_by_partial_link_text("EDICOLA")
-        b.execute_script("arguments[0].click();", newspapers_section)
+        newspapers_section = page.locator(":nth-match(:text('EDICOLA'), 1)")
+        newspapers_section.click()
 
         # Focusing on Corriere della Sera, safe bet for a pressreader presence
-        corriere_sera = b.find_element_by_partial_link_text("Sera")
-        b.execute_script("arguments[0].click();", corriere_sera)
+        corriere_sera = page.locator("text=Corriere della Sera")
+        corriere_sera.nth(0).click()
 
-        pressreader_submit_button = b.find_element_by_partial_link_text("SFOGLIA")
+        pressreader_submit_button = page.locator(":nth-match(:text('SFOGLIA'), 1)")
         pressreader_submit_button.click()
 
     except Exception as e:
@@ -90,21 +77,23 @@ def navigate_to_newspapers(b):
             NOTIFY.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
             NOTIFY.screenshot_client.take_screenshot('error')
             NOTIFY.screenshot_client.remove_screenshot()
-        b.quit()
-        sys.exit(f"Element not found! {navigate_to_newspapers.__name__} ; {e}")
+        b.close()
+        sys.exit(f"Error in {navigate_to_newspapers.__name__} ; {e}")
 
 
-def verify_error_modal_presence(b):
+def verify_error_modal_presence(page: Page):
     try:
-        modal_outer_element = b.find_element_by_class_name("modal-content")
+        modal_outer_element = page.wait_for_selector(".modal-content", timeout=5)
         print("Modal found on MLOL entry")
         NOTIFY.send_message("Modal found in MLOL")
+        NOTIFY.screenshot_client.take_screenshot('modal')
+        NOTIFY.screenshot_client.remove_screenshot()
 
         # Retrieving modal dismissal button
-        modal_dismiss_button = b.find_element_by_xpath("//div[@class='modal-footer']/button[@data-dismiss='modal']")
-        modal_dismiss_button.click()
+        modal_dismissal_button = page.locator("//div[@class='modal-footer']/button[@data-dismiss='modal']")
+        modal_dismissal_button.click()
         print("Modal dissmissed correctly!")
 
-    except NoSuchElementException:
+    except TimeoutError:
         # No modal found
         pass
