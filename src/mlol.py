@@ -63,7 +63,7 @@ def navigate_to_newspapers(b: Browser, page: Page):
     try:
         # Clicking on catalogue
         typologies_menu_entry = page.query_selector("#caricatip")
-        typologies_menu_entry.click(timeout=0)
+        typologies_menu_entry.click()
 
         newspapers_section = page.locator(":nth-match(:text('EDICOLA'), 1)")
         newspapers_section.click()
