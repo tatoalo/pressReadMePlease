@@ -21,7 +21,6 @@ def visit_MLOL(b: Browser, page: Page, mlol_entrypoint: str = "", mlol_auth: Lis
     verify_error_modal_presence(page)
     new_page_tab = navigate_to_newspapers(b, page)
 
-    breakpoint()
     return new_page_tab
 
 
