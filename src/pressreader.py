@@ -61,7 +61,26 @@ def login_pressreader(b: Browser, page: Page, pressreader_auth: str):
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
 
 
-def failed_login_procedure(b):
+def logout_pressreader(page: Page):
+    try:
+        profile_dialog_menu = page.query_selector('.userphoto-title')
+        profile_dialog_menu.click()
+
+        logout_item = page.query_selector('.pri-logout')
+        logout_item.click()
+    except TimeoutError:
+        pass
+
+
+def select_publication_button(page: Page):
+    try:
+        publication_button = page.query_selector("text=Select Publication")
+        publication_button.click()
+    except TimeoutError:
+        pass
+
+
+def failed_login_procedure(b: Browser, p: Page):
     try:
         wrong_credentials_warning = p.query_selector(".infomsg >> text=Invalid")
         if wrong_credentials_warning.is_visible():
