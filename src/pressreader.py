@@ -36,23 +36,23 @@ def login_pressreader(b: Browser, page: Page, pressreader_auth: str):
         print("Logging into Pressreader...")
         username, password = pressreader_auth[0], pressreader_auth[1]
 
-        page.fill("input[type='email']", "lol", timeout=0)
+        page.fill("input[type='email']", "lol@test.com", timeout=0)
         page.fill("input[type='password']", "lol", timeout=0)
         breakpoint()
 
-        # pressreader_id = b.find_element_by_xpath("//input[@type='email']")
-        # pressreader_psw = b.find_element_by_xpath("//input[@type='password']")
-        # pressreader_id.send_keys(username)
-        # pressreader_psw.send_keys(password)
-
         # Unchecking `stay signed in checkbox`
         stay_signed_in_checkbox = page.locator("label:has-text(\"Stay signed in\")")
-        if not stay_signed_in_checkbox.is_checked():
+        if stay_signed_in_checkbox.is_checked():
             stay_signed_in_checkbox.click()
 
         # Sign in procedure
-        submit_button = b.find_element_by_xpath("//div[@class='pop-group']/a[@role='link']")
-        b.execute_script("arguments[0].click();", submit_button)
+        submit_button = page.query_selector(".btn-action")
+
+        with page.expect_response("**/services/auth/**") as response_info:
+            submit_button.click()
+
+        response = response_info.value
+        print(f"{response.status}, {response.status_text}")
 
         # Checking whether credentials were wrong
         failed_login_procedure(b)
