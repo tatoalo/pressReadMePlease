@@ -1,12 +1,14 @@
 import sys
 
 from notify import Notifier
+
 from typing import Optional
+from pathlib import Path
 
 NOTIFY = Notifier()
 
 
-def extract_keys(path: str = "auth_data.txt", notification_service: Optional = None):
+def extract_keys(path: Path = "auth_data.txt", notification_service: Optional = None):
     """
     The file must be in the same `src` working directory
     of the other python files, the following must be the format (each line with an information/credential):
