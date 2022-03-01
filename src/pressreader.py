@@ -16,7 +16,8 @@ def visit_pressreader(b: Browser, page: Page, pressreader_auth: str = "", notifi
     print("Visiting Pressreader...")
 
     try:
-        sign_in_button = page.query_selector(".btn-login")
+        sign_in_button = page.locator(".btn-login")
+        sign_in_button.wait_for()
         sign_in_button.click()
 
         login_pressreader(b, page, pressreader_auth)
@@ -74,7 +75,7 @@ def logout_pressreader(page: Page):
 
 def select_publication_button(page: Page):
     try:
-        publication_button = page.query_selector("text=Select Publication")
+        publication_button = page.wait_for_selector("text=Select Publication")
         publication_button.click()
     except TimeoutError:
         pass
@@ -83,7 +84,7 @@ def select_publication_button(page: Page):
 def failed_login_procedure(b: Browser, p: Page):
     try:
         wrong_credentials_warning = p.query_selector(".infomsg >> text=Invalid")
-        if wrong_credentials_warning.is_visible():
+        if wrong_credentials_warning and wrong_credentials_warning.is_visible():
             b.close()
             NOTIFY.send_message("Wrong Pressreader credentials!")
             sys.exit("Login failed, please check your Pressreader credentials!")
