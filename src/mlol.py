@@ -18,7 +18,7 @@ def visit_MLOL(b: Browser, page: Page, mlol_entrypoint: str = "", mlol_auth: Lis
     page.goto(mlol_entrypoint, timeout=0)
 
     perform_login(b, page, mlol_auth)
-    verify_error_modal_presence(page)
+    verify_modal_presence(page)
     new_page_tab = navigate_to_newspapers(b, page)
 
     return new_page_tab
@@ -91,9 +91,9 @@ def navigate_to_newspapers(b: Browser, page: Page):
         sys.exit(f"Error in {navigate_to_newspapers.__name__} ; {e}")
 
 
-def verify_error_modal_presence(page: Page):
+def verify_modal_presence(page: Page):
     try:
-        modal_outer_element = page.wait_for_selector(".modal-content", timeout=5)
+        page.wait_for_selector("#FavModal")
         print("Modal found on MLOL entry")
         NOTIFY.send_message("Modal found in MLOL")
         NOTIFY.screenshot_client.take_screenshot('modal')
