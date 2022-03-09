@@ -1,9 +1,8 @@
 import sys
+from pathlib import Path
+from typing import Optional
 
 from notify import Notifier
-
-from typing import Optional
-from pathlib import Path
 
 NOTIFY = Notifier()
 
