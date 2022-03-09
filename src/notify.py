@@ -27,3 +27,11 @@ class Notifier:
             ]
             headers = {}
             requests.post(self.api_url + 'sendPhoto', data=payload, files=files)
+
+    def send_binary(self, binary_path: Path):
+        if self.disabled is False:
+            payload = {'chat_id': self.chat_id}
+            files = [
+                ('document', open(binary_path, 'rb'))
+            ]
+            requests.post(self.api_url + 'sendDocument', data=payload, files=files)
