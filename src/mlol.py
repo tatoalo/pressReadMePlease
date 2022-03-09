@@ -24,7 +24,9 @@ def visit_MLOL(mlol_entrypoint: str = "", mlol_auth: List[str] = [], notificatio
 
     perform_login(page, mlol_auth)
     verify_modal_presence(page)
-    new_page_tab = navigate_to_newspapers(b, page)
+    new_page_tab = navigate_to_newspapers(page)
+
+    logout_mlol(page)
 
     return new_page_tab
 
@@ -112,4 +114,12 @@ def verify_modal_presence(page: Page):
 
     except TimeoutError:
         # No modal found
+        pass
+
+
+def logout_mlol(page: Page):
+    try:
+        logout_item = page.wait_for_selector('.btn-logout')
+        logout_item.click()
+    except TimeoutError:
         pass
