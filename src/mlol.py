@@ -65,7 +65,7 @@ def failed_login_procedure(page: Page):
         pass
 
 
-def navigate_to_newspapers(page: Page):
+def navigate_to_newspapers(page: Page) -> Page:
     try:
         # Clicking on catalogue
         typologies_menu_entry = page.query_selector("#caricatip")
