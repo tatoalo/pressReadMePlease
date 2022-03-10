@@ -12,7 +12,7 @@ from pressreader import visit_pressreader
 from screenshot import Screenshot
 
 # Timeout in ms
-TIMEOUT = 10000
+TIMEOUT = 30000
 
 PROJECT_ROOT = Path(__file__).parent
 env_path = Path(PROJECT_ROOT / "notification_service.env")
