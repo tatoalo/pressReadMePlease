@@ -33,8 +33,9 @@ class Chromium(metaclass=Singleton):
         self.context = self.browser.new_context()
 
         self.notifier = notifier
+        self.timeout = timeout
 
-        self.context.set_default_timeout(timeout)
+        self.context.set_default_timeout(self.timeout)
         if self.trace:
             self.context.tracing.start(screenshots=True, snapshots=True)
 
