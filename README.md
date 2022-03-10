@@ -19,7 +19,13 @@ By default the authentication token updating procedure will launch every Friday 
 
 ## Quick Start w/ Docker
 
-You can [pull](https://hub.docker.com/r/tatoalo/pressreader-automation) the Docker image, subsequently launch the container with:
+You can [pull](https://hub.docker.com/r/tatoalo/pressreader-automation) the Docker image with 
+
+```
+docker pull tatoalo/pressreader-automation:v.2.0.0
+```
+
+and subsequently launch the container with:
 
 ```
 docker run --name pressreader -itd --restart unless-stopped tatoalo/pressreader-automation
@@ -74,4 +80,4 @@ If you want, you can run this beside [Watchtower](https://github.com/containrrr/
 
 ## Clone the repo
 
-You can clone the repo and launch it as is (requires *Chrome/Chromium, chromedriver + selenium + requests*). 
+You can clone the repo and launch it as is (requires *Chromium, Playwright and Requests*). 
