@@ -30,7 +30,9 @@ class Chromium(metaclass=Singleton):
         self.browser = self.playwright.chromium.launch(
             headless=headless
         )
-        self.context = self.browser.new_context()
+        self.context = self.browser.new_context(
+            locale='en-GB'
+        )
 
         self.notifier = notifier
         self.timeout = timeout
