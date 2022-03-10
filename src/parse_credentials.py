@@ -1,11 +1,13 @@
 import sys
+from pathlib import Path
+from typing import Optional
 
 from notify import Notifier
 
 NOTIFY = Notifier()
 
 
-def extract_keys(path="auth_data.txt", notification_service=None):
+def extract_keys(path: Path = "auth_data.txt", notification_service: Optional = None):
     """
     The file must be in the same `src` working directory
     of the other python files, the following must be the format (each line with an information/credential):
@@ -27,7 +29,7 @@ def extract_keys(path="auth_data.txt", notification_service=None):
         :param path:                                path to authorization file
         :param notification_service:                Notifier object
 
-        :return str tuple, str tuple, str tuple     mlol link, mlol credentials, pressreader credentials
+        :return str tuple, List[str] tuple, str tuple     mlol link, mlol credentials, pressreader credentials
       """
 
     if notification_service is not None:

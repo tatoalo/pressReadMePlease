@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 
-crond && /bin/sh
+/bin/bash

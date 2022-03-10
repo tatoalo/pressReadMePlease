@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import requests
 
 
@@ -12,12 +14,12 @@ class Notifier:
         self.chat_id = chat_id
         self.screenshot_client = screenshot_client
 
-    def send_message(self, message):
+    def send_message(self, message: str):
         if self.disabled is False:
             payload = {'chat_id': self.chat_id, 'text': message}
             requests.post(self.api_url + 'sendMessage', data=payload)
 
-    def send_image(self, image_location):
+    def send_image(self, image_location: Path):
         if self.disabled is False:
             payload = {'chat_id': self.chat_id}
             files = [
@@ -25,3 +27,11 @@ class Notifier:
             ]
             headers = {}
             requests.post(self.api_url + 'sendPhoto', data=payload, files=files)
+
+    def send_binary(self, binary_path: Path):
+        if self.disabled is False:
+            payload = {'chat_id': self.chat_id}
+            files = [
+                ('document', open(binary_path, 'rb'))
+            ]
+            requests.post(self.api_url + 'sendDocument', data=payload, files=files)

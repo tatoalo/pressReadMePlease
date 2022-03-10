@@ -1,28 +1,27 @@
-try:
-    from src.pressreadmeplease import init_chrome, close_browser, PROJECT_ROOT
-except ImportError:
-    from .src.pressreadmeplease import init_chrome, close_browser, PROJECT_ROOT
-
-from src.screenshot import Screenshot, ScreenshotNotTaken
-
-import unittest
 from pathlib import Path
-from unittest import mock
+from unittest import mock, TestCase
+
+from src.chromium import Chromium
+from src.screenshot import Screenshot
+from src.screenshot import ScreenshotNotTaken
+
+TEST_PATH = Path(__file__).parent
 
 
-class TestScreenshot(unittest.TestCase):
+class TestScreenshot(TestCase):
 
     @mock.patch('src.notify.Notifier')
-    def setUp(self, mock_notifier) -> None:
-        self.browser = init_chrome()
-        self.screenshot = Screenshot(notifier=mock_notifier, path=PROJECT_ROOT, browser=self.browser)
+    def setUp(self, notifier_mock) -> None:
+        self.chromium = Chromium()
+        self.chromium.context.new_page()
+        self.page = self.chromium.context.pages[0]
 
-    def tearDown(self) -> None:
-        close_browser(self.browser)
+        self.screenshot = Screenshot(notifier=notifier_mock, path=TEST_PATH)
 
     def test_screenshot_taken(self):
-        self.screenshot.take_screenshot('tests/blank_screen')
-        screenshot_file = Path(PROJECT_ROOT / "tests/blank_screen.png")
+        self.screenshot.take_screenshot(self.page, 'blank_screen')
+
+        screenshot_file = Path(TEST_PATH / "blank_screen.png")
 
         self.assertTrue(screenshot_file.is_file(), "Screenshot has not been taken!")
         self.screenshot.remove_screenshot()
@@ -30,7 +29,3 @@ class TestScreenshot(unittest.TestCase):
     def test_screenshot_not_taken_cannot_be_removed(self):
         with self.assertRaises(ScreenshotNotTaken):
             self.screenshot.remove_screenshot()
-
-
-if __name__ == '__main__':
-    unittest.main()

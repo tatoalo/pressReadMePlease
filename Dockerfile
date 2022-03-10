@@ -1,26 +1,21 @@
-FROM alpine:3.14
+FROM ubuntu:20.04
 
-RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
-RUN apk add chromium --repository=http://dl-cdn.alpinelinux.org/alpine/v3.14/main
-RUN apk add chromium-chromedriver
-RUN python3 -m ensurepip
-RUN pip3 install --no-cache --upgrade pip setuptools
-RUN apk add --no-cache --virtual .pynacl_deps build-base python3-dev libffi-dev
-RUN pip3 install selenium
-RUN pip3 install requests
-RUN pip3 install python-dotenv
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=Europe/London
 
-# Trimming for reducing overall image size
-RUN apk del .pynacl_deps
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 python3-distutils python3-pip curl cron vim && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
+    pip3 install --no-cache-dir playwright==1.19.1 python-dotenv==0.19.0 requests==2.26.0 &&  \
+    playwright install chromium && \
+    playwright install-deps chromium &&  \
+    # clean apt cache
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ADD src/*.py src/
+WORKDIR /src
 
-COPY pressreader-cron /var/spool/cron/crontabs/root
-COPY entrypoint.sh /usr/local/bin
-
-RUN chmod +x /usr/local/bin/entrypoint.sh
-RUN chmod +x /var/spool/cron/crontabs/root
-
-RUN touch /var/log/pressreader-automation.log
+COPY --chmod=777 pressreader-cron /var/spool/cron/crontabs/root
+COPY --chmod=777 entrypoint.sh /usr/local/bin
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
