@@ -80,7 +80,7 @@ def navigate_to_newspapers(page: Page) -> Page:
 
         pressreader_submit_button = page.locator(":nth-match(:text('SFOGLIA'), 1)")
 
-        with page.expect_popup(timeout=chromium.timeout) as pressreader_blank_target:
+        with chromium.context.expect_page() as pressreader_blank_target:
             pressreader_submit_button.click()
         page_pressreader = pressreader_blank_target.value
         page_pressreader.wait_for_load_state("domcontentloaded")
