@@ -49,7 +49,7 @@ def perform_login(page: Page, mlol_auth: List[str]):
             NOTIFY.send_message(f"Error in {perform_login.__name__} ; {e}")
             NOTIFY.screenshot_client.take_screenshot(page, 'error')
             NOTIFY.screenshot_client.remove_screenshot()
-        chromium.clean()
+        chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {perform_login.__name__} ; {e}")
 
 
@@ -57,7 +57,7 @@ def failed_login_procedure(page: Page):
     try:
         warning_failed_login = page.text_content(".page-title").lower()
         if 'avviso' in warning_failed_login:
-            chromium.clean()
+            chromium.clean(debug_trace=True)
             if not NOTIFY.disabled:
                 NOTIFY.send_message("Wrong MLOL credentials!")
             sys.exit("Login failed, please check your MLOL credentials!")
@@ -94,7 +94,7 @@ def navigate_to_newspapers(page: Page):
             NOTIFY.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
             NOTIFY.screenshot_client.take_screenshot(page, 'error')
             NOTIFY.screenshot_client.remove_screenshot()
-        chromium.clean()
+        chromium.clean(debug_trace=True)
         sys.exit(f"Error in {navigate_to_newspapers.__name__} ; {e}")
 
 

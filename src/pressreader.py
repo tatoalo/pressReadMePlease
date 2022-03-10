@@ -35,7 +35,7 @@ def visit_pressreader(page: Page, pressreader_auth: str = "", notification_servi
             NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
             NOTIFY.screenshot_client.take_screenshot(page, 'error')
             NOTIFY.screenshot_client.remove_screenshot()
-        chromium.clean()
+        chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
 
 
@@ -63,7 +63,7 @@ def login_pressreader(page: Page, pressreader_auth: str):
             NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
             NOTIFY.screenshot_client.take_screenshot(page, 'error')
             NOTIFY.screenshot_client.remove_screenshot()
-        chromium.clean()
+        chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
 
 
@@ -82,7 +82,7 @@ def failed_login_procedure(p: Page):
     try:
         wrong_credentials_warning = p.query_selector(".infomsg >> text=Invalid")
         if wrong_credentials_warning and wrong_credentials_warning.is_visible():
-            chromium.clean()
+            chromium.clean(debug_trace=True)
             NOTIFY.send_message("Wrong Pressreader credentials!")
             sys.exit("Login failed, please check your Pressreader credentials!")
     except TimeoutError:
