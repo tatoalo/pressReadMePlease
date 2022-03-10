@@ -41,8 +41,9 @@ class Chromium(metaclass=Singleton):
         if self.trace:
             self.context.tracing.start(screenshots=True, snapshots=True)
 
-    def clean(self):
-        self.__export_trace()
+    def clean(self, debug_trace=False):
+        if self.trace and debug_trace:
+            self.__export_trace()
         print("Quitting Chromium...")
         self.context.close()
         self.browser.close()
@@ -68,12 +69,13 @@ class Chromium(metaclass=Singleton):
             self.clean()
 
     def __export_trace(self) -> None:
-        if self.notifier and self.trace:
-            trace_path = PROJECT_ROOT / "debug_trace.zip"
+        trace_path = PROJECT_ROOT / "debug_trace.zip"
+        if self.notifier:
             self.context.tracing.stop(path=trace_path)
             self.notifier.send_binary(binary_path=trace_path)
-            if trace_path:
-                os.remove(trace_path)
+
+        if trace_path:
+            os.remove(trace_path)
 
     @staticmethod
     def __check_response_status(response: Response) -> (bool, int):
