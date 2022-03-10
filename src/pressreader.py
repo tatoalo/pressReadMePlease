@@ -53,7 +53,7 @@ def login_pressreader(page: Page, pressreader_auth: str):
             stay_signed_in_checkbox.click()
 
         # Sign in procedure
-        submit_button = page.query_selector(".btn-action >> text=Sign In")
+        submit_button = page.wait_for_selector("xpath=//div[@class='pop-group']/a[@role='link']")
         submit_button.click()
         # Checking whether credentials were wrong
         failed_login_procedure(page)
