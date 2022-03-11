@@ -22,13 +22,13 @@ By default the authentication token updating procedure will launch every Friday 
 You can [pull](https://hub.docker.com/r/tatoalo/pressreader-automation) the Docker image with 
 
 ```
-docker pull tatoalo/pressreader-automation:v.2.0.1
+docker pull tatoalo/pressreader-automation:v2.0.1
 ```
 
 and subsequently launch the container with:
 
 ```
-docker run --name pressreader -itd --restart unless-stopped tatoalo/pressreader-automation:v.2.0.1
+docker run --name pressreader -itd --restart unless-stopped tatoalo/pressreader-automation:v2.0.1
 ```
 
 ### Authentication Data
