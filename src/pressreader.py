@@ -20,8 +20,9 @@ def visit_pressreader(page: Page, pressreader_auth: str = "", notification_servi
     print("Visiting Pressreader...")
 
     try:
-        publication_button = page.wait_for_selector("xpath=//label[@data-bind='click: selectTitle']")
-        publication_button.click()
+        publication_button = page.query_selector("xpath=//label[@data-bind='click: selectTitle']")
+        if publication_button:
+            publication_button.click()
 
         sign_in_button = page.locator(".btn-login")
         sign_in_button.wait_for()
