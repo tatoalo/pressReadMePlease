@@ -33,6 +33,7 @@ class Chromium(metaclass=Singleton):
         self.context = self.browser.new_context(
             locale='en-GB'
         )
+        self.context.clear_cookies()
 
         self.notifier = notifier
         self.timeout = timeout
