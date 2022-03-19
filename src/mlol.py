@@ -11,7 +11,7 @@ NOTIFY = Notifier()
 chromium = None
 
 
-def visit_MLOL(mlol_entrypoint: str = "", mlol_auth: List[str] = [], notification_service: Notifier = None):
+def visit_MLOL(mlol_entrypoint: str = "", mlol_auth: List[str] = [], notification_service: Notifier = None) -> Page:
     global chromium
     chromium = Chromium.get_chromium()
     if notification_service is not None:
