@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.2 - 2022-03-19
+
+* Updated to Playwright `v1.20.0`
+* Fixed DNS not resolving issue
+* Crontab correctly running on `ubuntu` image
+
 ## 2.0.1 - 2022-03-11
 
 * 👨‍🔧 Fixed cron failure
