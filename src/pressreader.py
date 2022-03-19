@@ -20,12 +20,9 @@ def visit_pressreader(page: Page, pressreader_auth: str = "", notification_servi
     print("Visiting Pressreader...")
 
     try:
-        publication_button = page.query_selector("xpath=//label[@data-bind='click: selectTitle']")
-        if publication_button:
-            publication_button.click()
+        handle_publication_button(page)
 
-        sign_in_button = page.locator(".btn-login")
-        sign_in_button.wait_for()
+        sign_in_button = page.wait_for_selector(".btn-login")
         sign_in_button.click()
 
         login_pressreader(page, pressreader_auth)
@@ -66,6 +63,15 @@ def login_pressreader(page: Page, pressreader_auth: str):
             NOTIFY.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
+
+
+def handle_publication_button(page: Page):
+    try:
+        publication_button = page.wait_for_selector("xpath=//label[@data-bind='click: selectTitle']")
+        publication_button.click()
+
+    except TimeoutError:
+        pass
 
 
 def logout_pressreader(page: Page):
