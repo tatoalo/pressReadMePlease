@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.3 - 2022-04-20
+
+* ⏫ Upgraded to Playwright `v1.21.0`
+
 ## 2.0.2 - 2022-03-19
 
 * ⏫ Updated to Playwright `v1.20.0`
