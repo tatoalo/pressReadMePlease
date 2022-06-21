@@ -1,4 +1,5 @@
 import sys
+from http import HTTPStatus
 
 from playwright.sync_api import Page, Response, TimeoutError
 
@@ -23,7 +24,7 @@ def visit_pressreader(
     try:
         handle_publication_button(page)
 
-        sign_in_button = page.wait_for_selector(".btn-login")
+        sign_in_button = page.locator(".btn-login")
         sign_in_button.click()
 
         login_pressreader(page, pressreader_auth)
@@ -56,6 +57,8 @@ def login_pressreader(page: Page, pressreader_auth: str):
             "xpath=//div[@class='pop-group']/a[@role='link']"
         )
         submit_button.click()
+        subscribe_to_login_event(page)
+
         # Checking whether credentials were wrong
         failed_login_procedure(page)
 
@@ -99,3 +102,25 @@ def failed_login_procedure(p: Page):
             sys.exit("Login failed, please check your Pressreader credentials!")
     except TimeoutError:
         pass
+
+
+def handle_sign_in_event(r: Response) -> None:
+    if r.status == HTTPStatus.FORBIDDEN:
+        if not NOTIFY.disabled:
+            NOTIFY.send_message(
+                f"Access denied to PressReader website {handle_sign_in_event.__name__}"
+            )
+        chromium.clean(debug_trace=True)
+        sys.exit("Access denied to PressReader!")
+
+
+def __filter_response_login_event(r: Response) -> bool:
+    if "Authentication/SignIn" in r.url:
+        handle_sign_in_event(r)
+        return True
+
+    return False
+
+
+def subscribe_to_login_event(p: Page):
+    p.on("response", lambda r: __filter_response_login_event(r))
