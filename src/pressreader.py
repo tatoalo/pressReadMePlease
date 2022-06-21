@@ -1,7 +1,6 @@
 import sys
 
-from playwright.sync_api import Page
-from playwright.sync_api import TimeoutError
+from playwright.sync_api import Page, Response, TimeoutError
 
 from chromium import Chromium
 from notify import Notifier
@@ -10,7 +9,9 @@ NOTIFY = Notifier()
 chromium = None
 
 
-def visit_pressreader(page: Page, pressreader_auth: str = "", notification_service: Notifier = None):
+def visit_pressreader(
+    page: Page, pressreader_auth: str = "", notification_service: Notifier = None
+):
     global chromium
     chromium = Chromium.get_chromium()
     if notification_service is not None:
@@ -31,7 +32,7 @@ def visit_pressreader(page: Page, pressreader_auth: str = "", notification_servi
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot(page, 'error')
+            NOTIFY.screenshot_client.take_screenshot(page, "error")
             NOTIFY.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
@@ -46,12 +47,14 @@ def login_pressreader(page: Page, pressreader_auth: str):
         page.fill("input[type='password']", password, timeout=0)
 
         # Unchecking `stay signed in checkbox`
-        stay_signed_in_checkbox = page.wait_for_selector('.checkbox')
+        stay_signed_in_checkbox = page.wait_for_selector(".checkbox")
         if stay_signed_in_checkbox.is_checked():
             stay_signed_in_checkbox.click()
 
         # Sign in procedure
-        submit_button = page.wait_for_selector("xpath=//div[@class='pop-group']/a[@role='link']")
+        submit_button = page.wait_for_selector(
+            "xpath=//div[@class='pop-group']/a[@role='link']"
+        )
         submit_button.click()
         # Checking whether credentials were wrong
         failed_login_procedure(page)
@@ -59,7 +62,7 @@ def login_pressreader(page: Page, pressreader_auth: str):
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot(page, 'error')
+            NOTIFY.screenshot_client.take_screenshot(page, "error")
             NOTIFY.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
@@ -67,7 +70,9 @@ def login_pressreader(page: Page, pressreader_auth: str):
 
 def handle_publication_button(page: Page):
     try:
-        publication_button = page.wait_for_selector("xpath=//label[@data-bind='click: selectTitle']")
+        publication_button = page.wait_for_selector(
+            "xpath=//label[@data-bind='click: selectTitle']"
+        )
         publication_button.click()
 
     except TimeoutError:
@@ -76,10 +81,10 @@ def handle_publication_button(page: Page):
 
 def logout_pressreader(page: Page):
     try:
-        profile_dialog_menu = page.wait_for_selector('.userphoto-title')
+        profile_dialog_menu = page.wait_for_selector(".userphoto-title")
         profile_dialog_menu.click()
 
-        logout_item = page.wait_for_selector('.pri-logout')
+        logout_item = page.wait_for_selector(".pri-logout")
         logout_item.click()
     except TimeoutError:
         pass

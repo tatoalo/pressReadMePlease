@@ -11,7 +11,11 @@ NOTIFY = Notifier()
 chromium = None
 
 
-def visit_MLOL(mlol_entrypoint: str = "", mlol_auth: List[str] = [], notification_service: Notifier = None) -> Page:
+def visit_MLOL(
+    mlol_entrypoint: str = "",
+    mlol_auth: List[str] = [],
+    notification_service: Notifier = None,
+) -> Page:
     global chromium
     chromium = Chromium.get_chromium()
     if notification_service is not None:
@@ -47,7 +51,7 @@ def perform_login(page: Page, mlol_auth: List[str]):
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {perform_login.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot(page, 'error')
+            NOTIFY.screenshot_client.take_screenshot(page, "error")
             NOTIFY.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {perform_login.__name__} ; {e}")
@@ -56,7 +60,7 @@ def perform_login(page: Page, mlol_auth: List[str]):
 def failed_login_procedure(page: Page):
     try:
         warning_failed_login = page.text_content(".page-title").lower()
-        if 'avviso' in warning_failed_login:
+        if "avviso" in warning_failed_login:
             chromium.clean(debug_trace=True)
             if not NOTIFY.disabled:
                 NOTIFY.send_message("Wrong MLOL credentials!")
@@ -85,14 +89,16 @@ def navigate_to_newspapers(page: Page) -> Page:
         page_pressreader = pressreader_blank_target.value
         page_pressreader.wait_for_load_state("domcontentloaded")
 
-        assert 'pressreader' in page_pressreader.title().lower(), Exception("Failed tab switch")
+        assert "pressreader" in page_pressreader.title().lower(), Exception(
+            "Failed tab switch"
+        )
 
         return page_pressreader
 
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot(page, 'error')
+            NOTIFY.screenshot_client.take_screenshot(page, "error")
             NOTIFY.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
         sys.exit(f"Error in {navigate_to_newspapers.__name__} ; {e}")
@@ -104,11 +110,13 @@ def verify_modal_presence(page: Page):
         print("Modal found on MLOL entry")
         if not NOTIFY.disabled:
             NOTIFY.send_message("Modal found in MLOL")
-            NOTIFY.screenshot_client.take_screenshot(page, 'modal')
+            NOTIFY.screenshot_client.take_screenshot(page, "modal")
             NOTIFY.screenshot_client.remove_screenshot()
 
         # Retrieving modal dismissal button
-        modal_dismissal_button = page.locator("//div[@class='modal-footer']/button[@data-dismiss='modal']")
+        modal_dismissal_button = page.locator(
+            "//div[@class='modal-footer']/button[@data-dismiss='modal']"
+        )
         modal_dismissal_button.click()
         print("Modal dissmissed correctly!")
 
@@ -119,7 +127,7 @@ def verify_modal_presence(page: Page):
 
 def logout_mlol(page: Page):
     try:
-        logout_item = page.wait_for_selector('.btn-logout')
+        logout_item = page.wait_for_selector(".btn-logout")
         logout_item.click()
     except TimeoutError:
         pass

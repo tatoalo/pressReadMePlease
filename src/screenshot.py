@@ -13,7 +13,7 @@ class Screenshot:
 
         self.screenshot_path = None
 
-    def take_screenshot(self, page: Page, filename: str = 'screenshot'):
+    def take_screenshot(self, page: Page, filename: str = "screenshot"):
         print(" ### Taking screenshot ###")
         self.screenshot_path = self.path / f"{filename}.png"
 
@@ -25,9 +25,13 @@ class Screenshot:
             if self.screenshot_path:
                 os.remove(self.screenshot_path)
             else:
-                raise ScreenshotNotTaken("Screenshot has not been taken yet, thus cannot be removed!")
+                raise ScreenshotNotTaken(
+                    "Screenshot has not been taken yet, thus cannot be removed!"
+                )
         except Exception:
-            raise ScreenshotNotTaken("Screenshot has not been taken yet, thus cannot be removed!")
+            raise ScreenshotNotTaken(
+                "Screenshot has not been taken yet, thus cannot be removed!"
+            )
 
 
 class ScreenshotNotTaken(Exception):

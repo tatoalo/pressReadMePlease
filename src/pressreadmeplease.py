@@ -37,22 +37,23 @@ def config_page(page: Page):
 
 def main():
     # Retrieve credentials and MLOL entrypoint
-    mlol_link, mlol_credentials, pressreader_credentials = extract_keys(path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY)
-    chromium = Chromium(
-        headless=True,
-        trace=True,
-        timeout=TIMEOUT,
-        notifier=NOTIFY
+    mlol_link, mlol_credentials, pressreader_credentials = extract_keys(
+        path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY
     )
+    chromium = Chromium(headless=True, trace=True, timeout=TIMEOUT, notifier=NOTIFY)
     chromium.context.on("page", config_page)
     chromium.context.new_page()
     pressreader_tab = visit_MLOL(
         mlol_entrypoint=mlol_link,
         mlol_auth=mlol_credentials,
-        notification_service=NOTIFY
+        notification_service=NOTIFY,
     )
 
-    visit_pressreader(page=pressreader_tab, pressreader_auth=pressreader_credentials, notification_service=NOTIFY)
+    visit_pressreader(
+        page=pressreader_tab,
+        pressreader_auth=pressreader_credentials,
+        notification_service=NOTIFY,
+    )
     print("*** Automation flow has terminated correctly ***")
     chromium.clean()
 

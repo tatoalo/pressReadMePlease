@@ -1,3 +1,6 @@
+# macOS-specific
+.DS_Store
+
 # Project-specific secret
 *.txt
 .vscode/

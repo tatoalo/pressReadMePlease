@@ -2,15 +2,15 @@ from pathlib import Path
 from unittest import mock, TestCase
 
 from src.chromium import Chromium
-from src.screenshot import Screenshot
-from src.screenshot import ScreenshotNotTaken
+
+from src.screenshot import Screenshot, ScreenshotNotTaken
+
 
 TEST_PATH = Path(__file__).parent
 
 
 class TestScreenshot(TestCase):
-
-    @mock.patch('src.notify.Notifier')
+    @mock.patch("src.notify.Notifier")
     def setUp(self, notifier_mock) -> None:
         self.chromium = Chromium()
         self.chromium.context.new_page()
@@ -19,7 +19,7 @@ class TestScreenshot(TestCase):
         self.screenshot = Screenshot(notifier=notifier_mock, path=TEST_PATH)
 
     def test_screenshot_taken(self):
-        self.screenshot.take_screenshot(self.page, 'blank_screen')
+        self.screenshot.take_screenshot(self.page, "blank_screen")
 
         screenshot_file = Path(TEST_PATH / "blank_screen.png")
 

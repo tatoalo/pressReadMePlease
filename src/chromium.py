@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
+from typing import Tuple
 
-from playwright.sync_api import sync_playwright, Page, Response
+from playwright.sync_api import Page, Response, sync_playwright
 
 from notify import Notifier
 
@@ -19,20 +20,17 @@ class Singleton(type):
 
 
 class Chromium(metaclass=Singleton):
-
-    def __init__(self,
-                 headless: bool = True,
-                 trace: bool = False,
-                 timeout: int = 0,
-                 notifier: Notifier = None):
+    def __init__(
+        self,
+        headless: bool = True,
+        trace: bool = False,
+        timeout: int = 0,
+        notifier: Notifier = None,
+    ):
         self.trace = trace
         self.playwright = sync_playwright().start()
-        self.browser = self.playwright.chromium.launch(
-            headless=headless
-        )
-        self.context = self.browser.new_context(
-            locale='en-GB'
-        )
+        self.browser = self.playwright.chromium.launch(headless=headless)
+        self.context = self.browser.new_context(locale="en-GB")
         self.context.clear_cookies()
 
         self.notifier = notifier
@@ -64,8 +62,10 @@ class Chromium(metaclass=Singleton):
         # If I get a status different from 200, I fail and communicate that
         response_check, status = self.__check_response_status(response)
         if not response_check:
-            self.notifier.send_message(f"Error, {url} not reachable, got status {status}")
-            self.notifier.screenshot_client.take_screenshot(page, 'error')
+            self.notifier.send_message(
+                f"Error, {url} not reachable, got status {status}"
+            )
+            self.notifier.screenshot_client.take_screenshot(page, "error")
             self.notifier.screenshot_client.remove_screenshot()
             self.clean()
 
@@ -79,7 +79,7 @@ class Chromium(metaclass=Singleton):
             os.remove(trace_path)
 
     @staticmethod
-    def __check_response_status(response: Response) -> (bool, int):
+    def __check_response_status(response: Response) -> Tuple[bool, int]:
         if response.status != 200:
             print(f"Found status {response.status} for {response.url}")
             return False, response.status
