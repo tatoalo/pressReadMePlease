@@ -13,11 +13,13 @@ class Screenshot:
 
         self.screenshot_path = None
 
-    def take_screenshot(self, page: Page, filename: str = "screenshot"):
+    def take_screenshot(
+        self, page: Page, filename: str = "screenshot", full_page: bool = False
+    ):
         print(" ### Taking screenshot ###")
         self.screenshot_path = self.path / f"{filename}.png"
 
-        page.screenshot(path=self.screenshot_path)
+        page.screenshot(path=self.screenshot_path, full_page=full_page)
         self.notifier.send_image(image_location=self.screenshot_path)
 
     def remove_screenshot(self):
