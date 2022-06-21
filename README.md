@@ -11,7 +11,7 @@
   [![Pulls from DockerHub](https://img.shields.io/docker/pulls/tatoalo/pressreader-automation.svg)](https://hub.docker.com/r/tatoalo/pressreader-automation)
 </div>
 
-Using MLOL and PressReader to read newspapers from all over the world is pretty handy, if you use the mobile apps only, though, it may become pretty painful to remember once every week to manually login into MLOL and then PressReader from the dekstop version so that PressReader doens't throw you out of their system.
+Using MLOL and PressReader to read newspapers from all over the world is pretty handy, if you use the mobile apps only, though, it may become pretty painful to remember once every week to manually login into MLOL and then PressReader from the desktop version so that PressReader doesn't throw you out of their system.
 
 With pressReadMePlease you can automate this, **set it and forget it!**.
 
