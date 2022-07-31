@@ -18,6 +18,9 @@ class TestScreenshot(TestCase):
 
         self.screenshot = Screenshot(notifier=notifier_mock, path=TEST_PATH)
 
+    def tearDown(self) -> None:
+        self.chromium.clean()
+
     def test_screenshot_taken(self):
         self.screenshot.take_screenshot(self.page, "blank_screen")
 

@@ -14,6 +14,7 @@ elif platform == "linux":
 
     HEADLESS = False
     VIRTUAL_DISPLAY = True
+    print("I'm on LINUX!")
 else:
     exit("GTFO!")
 
@@ -35,6 +36,7 @@ class TestCloudflare(TestCase):
         self.screenshot = Screenshot(notifier=notifier_mock, path=TEST_PATH)
 
     def tearDown(self) -> None:
+        self.chromium.clean()
         if VIRTUAL_DISPLAY:
             self.d.stop()
 

@@ -14,6 +14,9 @@ class TestPressreader(TestCase):
         self.page = self.chromium.context.pages[0]
         self.page.goto("https:///www.google.com")
 
+    def tearDown(self) -> None:
+        self.chromium.clean()
+
     @mock.patch("src.pressreader.NOTIFY")
     @mock.patch("src.pressreader.chromium")
     @mock.patch("src.pressreader.sys.exit")
