@@ -21,7 +21,7 @@ else:
 TEST_PATH = Path(__file__).parent
 
 
-class TestCloudflare(TestCase):
+class TestHeadless(TestCase):
     @mock.patch("src.notify.Notifier")
     def setUp(self, notifier_mock) -> None:
 

@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from re import sub
 from unittest import TestCase, mock
 
 from src.chromium import Chromium
@@ -14,8 +13,9 @@ class TestPressreader(TestCase):
         self.page = self.chromium.context.pages[0]
         self.page.goto("https:///www.google.com")
 
-    def tearDown(self) -> None:
-        self.chromium.clean()
+    # def tearDown(self) -> None:
+    #     breakpoint()
+    #     self.chromium.clean()
 
     @mock.patch("src.pressreader.NOTIFY")
     @mock.patch("src.pressreader.chromium")
@@ -26,6 +26,7 @@ class TestPressreader(TestCase):
         global_notifier_mock.disabled = False
         notifier_send_message_argument = "notifier_send_message_has_been_called"
         system_exit_mock.return_value = "system_exit_message"
+        clean_mock.clean.return_value = "mocking clean call"
 
         global_notifier_mock.send_message.return_value = notifier_send_message_argument
         mocked_resource_url = "https://www.example.com/Authentication/SignIn"
@@ -36,7 +37,7 @@ class TestPressreader(TestCase):
         )
 
         subscribe_to_login_event(self.page)
-        self.page.goto(mocked_resource_url)
+        self.chromium.visit_site(page=self.page, url=mocked_resource_url)
 
         assert len(global_notifier_mock.send_message.call_args_list) == 1
         assert (
@@ -46,13 +47,14 @@ class TestPressreader(TestCase):
         assert global_notifier_mock.send_message.called
 
     @mock.patch("src.pressreader.NOTIFY")
+    @mock.patch("src.pressreader.chromium")
     def test_access_forbidden_not_captured_with_different_endpoint(
-        self, global_notifier_mock
+        self, clean_mock, global_notifier_mock
     ):
         global_notifier_mock.disabled = False
         resource_url_not_routed = "https://www.example.com/ThisIsGoingToBeA404"
 
         subscribe_to_login_event(self.page)
-        self.page.goto(resource_url_not_routed)
+        self.chromium.visit_site(page=self.page, url=resource_url_not_routed)
 
-        assert global_notifier_mock.called == False
+        assert global_notifier_mock.called is False
