@@ -12,9 +12,10 @@ def extract_keys(
 ):
     """
     The file must be in the same `src` working directory
-    of the other python files, the following must be the format (each line with an information/credential):
+    of the other python files, the following must be the format
+    (each line with an information/credential):
 
-        direct link of MLOL webpage (it depends to which library you're affiliated with)
+        direct link of MLOL webpage
         email address MLOL account
         password MLOL account
         email address PRESSREADER account
@@ -31,7 +32,8 @@ def extract_keys(
         :param path:                                path to authorization file
         :param notification_service:                Notifier object
 
-        :return str tuple, List[str] tuple, str tuple     mlol link, mlol credentials, pressreader credentials
+        :return str tuple, List[str] tuple, str tuple
+        as `mlol link, mlol credentials, pressreader credentials`
     """
 
     if notification_service is not None:
@@ -55,7 +57,8 @@ def extract_keys(
             # Super chill sanitization
             if "medialibrary.it" not in entrypoint_mlol or "@" not in pressreader[0]:
                 NOTIFY.send_message(
-                    "Something is wrong with the authentication data inserted, please check."
+                    "Something is wrong with the \
+                    authentication data inserted, please check."
                 )
                 sys.exit(
                     "Something is wrong with the data you've inserted, please check."

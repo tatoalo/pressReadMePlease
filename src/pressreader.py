@@ -108,7 +108,8 @@ def handle_sign_in_event(r: Response) -> None:
     if r.status == HTTPStatus.FORBIDDEN:
         if not NOTIFY.disabled:
             NOTIFY.send_message(
-                f"Access denied to PressReader website {handle_sign_in_event.__name__}"
+                f"Access denied to PressReader website \
+                {handle_sign_in_event.__name__}"
             )
         chromium.clean(debug_trace=True)
         sys.exit("Access denied to PressReader!")

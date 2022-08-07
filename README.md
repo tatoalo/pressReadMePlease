@@ -1,9 +1,9 @@
 <div align="center">
   <img src="./assets/logo.png" width="450" />
-  
+
   # pressReadMePlease
-  
-  A process for automating PressReader weekly token automagically.
+
+  A process for automating PressReader weekly token automagically. (currently tested against 🐍 `3.8.4`, `3.9` & `3.10.4`)
   <br/><br/>
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
   <br/><br/>
@@ -19,16 +19,16 @@ By default the authentication token updating procedure will launch every Friday 
 
 ## Quick Start w/ Docker
 
-You can [pull](https://hub.docker.com/r/tatoalo/pressreader-automation) the Docker image with 
+You can [pull](https://hub.docker.com/r/tatoalo/pressreader-automation) the Docker image with
 
 ```
-docker pull tatoalo/pressreader-automation:v2.0.4
+docker pull tatoalo/pressreader-automation:latest
 ```
 
 and subsequently launch the container with:
 
 ```
-docker run --name pressreader -itd --restart unless-stopped tatoalo/pressreader-automation:v2.0.4
+docker run --name pressreader -itd --restart unless-stopped tatoalo/pressreader-automation
 ```
 
 ### Authentication Data
@@ -48,7 +48,7 @@ The format required is:
     email address PRESSREADER account
     password PRESSREADER account
 ```
-one information per line, on the first run of `main.py` you'll receive a message back telling you to populate the file if it wasn't there to begin with.
+one information per line, on the first run of `pressreadmeplease.py` you'll receive a message back telling you to populate the file if it wasn't there to begin with.
 e.g.:
 ```
 $ cat auth_data.txt
@@ -80,4 +80,4 @@ If you want, you can run this beside [Watchtower](https://github.com/containrrr/
 
 ## Clone the repo
 
-You can clone the repo and launch it as is (requires *Chromium, Playwright and Requests*). 
+You can clone the repo and launch it as is (requires *Chromium, Playwright and Requests*).
