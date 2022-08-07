@@ -1,25 +1,35 @@
 import os
+import sys
+import weakref
 from pathlib import Path
 from typing import Tuple
 
 from playwright.sync_api import Page, Response, sync_playwright
 
+# Native in 3.11 (https://peps.python.org/pep-0673/)
+from typing_extensions import Self
+
 from notify import Notifier
 
 PROJECT_ROOT = Path(__file__).parent
-chromium = None
+# chromium = None
 
 
-class Singleton(type):
-    _instances = {}
+# class Singleton(type):
+#     _instances = WeakValueDictionary()
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+#     def __call__(cls, *args, **kwargs):
+#         if cls not in cls._instances:
+#             # This variable declaration is required to force a
+#             # strong reference on the instance.
+#             instance = super(Singleton, cls).__call__(*args, **kwargs)
+#             cls._instances[cls] = instance
+#         return cls._instances[cls]
 
 
-class Chromium(metaclass=Singleton):
+class Chromium(object):
+    _instance = []
+
     def __init__(
         self,
         headless: bool = True,
@@ -40,21 +50,43 @@ class Chromium(metaclass=Singleton):
         if self.trace:
             self.context.tracing.start(screenshots=True, snapshots=True)
 
+    def __new__(
+        cls,
+        headless: bool = True,
+        trace: bool = False,
+        timeout: int = 0,
+        notifier: Notifier = None,
+    ) -> Self:
+        if Chromium._instance:
+            print("An istance was already running, using that instead")
+            cls.__check_only_one_instance_alive()
+            return weakref.proxy(Chromium._instance[0])
+        else:
+            instance_local = super().__new__(cls)
+            Chromium._instance.append(instance_local)
+            return instance_local
+
     def clean(self, debug_trace=False):
         if self.trace and debug_trace:
             self.__export_trace()
         print("Quitting Chromium...")
-        self.context.close()
-        self.browser.close()
+        if len(Chromium._instance) != 0:
+            self.context.close()
+            self.browser.close()
+            self.playwright.stop()
+            self._instance.remove(self)
 
     @staticmethod
     def get_chromium():
-        global chromium
+        # TODO: fix this method
+        # global chromium
 
-        if chromium is None:
-            chromium = Chromium()
+        if len(Chromium._instance) == 0:
+            return Chromium()
+        else:
+            print("chromium is populated")
 
-        return chromium
+        return Chromium._instance[0]
 
     def visit_site(self, page: Page, url: str) -> None:
         response = page.goto(url)
@@ -84,3 +116,7 @@ class Chromium(metaclass=Singleton):
             print(f"Found status {response.status} for {response.url}")
             return False, response.status
         return True, response.status
+
+    def __check_only_one_instance_alive():
+        if len(Chromium._instance) != 1:
+            sys.exit("Weird behaviour, too many alive references...exiting...")
