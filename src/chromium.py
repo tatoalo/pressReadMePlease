@@ -2,7 +2,9 @@ import os
 import sys
 import weakref
 from pathlib import Path
-from typing import Tuple
+from typing import Optional, Tuple
+
+import _pickle as pickle
 
 from playwright.sync_api import Page, Response, sync_playwright
 
@@ -12,19 +14,6 @@ from typing_extensions import Self
 from notify import Notifier
 
 PROJECT_ROOT = Path(__file__).parent
-# chromium = None
-
-
-# class Singleton(type):
-#     _instances = WeakValueDictionary()
-
-#     def __call__(cls, *args, **kwargs):
-#         if cls not in cls._instances:
-#             # This variable declaration is required to force a
-#             # strong reference on the instance.
-#             instance = super(Singleton, cls).__call__(*args, **kwargs)
-#             cls._instances[cls] = instance
-#         return cls._instances[cls]
 
 
 class Chromium(object):
@@ -58,7 +47,6 @@ class Chromium(object):
         notifier: Notifier = None,
     ) -> Self:
         if Chromium._instance:
-            print("An istance was already running, using that instead")
             cls.__check_only_one_instance_alive()
             return weakref.proxy(Chromium._instance[0])
         else:
@@ -78,17 +66,12 @@ class Chromium(object):
 
     @staticmethod
     def get_chromium():
-        # TODO: fix this method
-        # global chromium
-
         if len(Chromium._instance) == 0:
             return Chromium()
-        else:
-            print("chromium is populated")
 
         return Chromium._instance[0]
 
-    def visit_site(self, page: Page, url: str) -> None:
+    def visit_site(self, page: Page, url: str) -> Optional[Response]:
         response = page.goto(url)
 
         # If I get a status different from 200, I fail and communicate that
@@ -100,6 +83,8 @@ class Chromium(object):
             self.notifier.screenshot_client.take_screenshot(page, "error")
             self.notifier.screenshot_client.remove_screenshot()
             self.clean()
+
+        return response
 
     def __export_trace(self) -> None:
         trace_path = PROJECT_ROOT / "debug_trace.zip"
