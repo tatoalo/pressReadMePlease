@@ -1,5 +1,6 @@
 import sys
 from http import HTTPStatus
+from typing import Tuple
 
 from playwright.sync_api import Page, Response, TimeoutError
 
@@ -28,6 +29,22 @@ def visit_pressreader(
         sign_in_button.click()
 
         login_pressreader(page, pressreader_auth)
+
+        hs_button = page.locator(".btn-hotspot")
+        hs_button.click()
+
+        flow_executed_correctly, error_msg = verify_execution_flow(page)
+
+        if not flow_executed_correctly:
+            if not NOTIFY.disabled:
+                NOTIFY.send_message(
+                    f"Flow was ***NOT** terminated correctly {visit_pressreader.__name__} ; {error_msg}"
+                )
+                NOTIFY.screenshot_client.take_screenshot(page, "error")
+                NOTIFY.screenshot_client.remove_screenshot()
+                chromium.clean(debug_trace=True)
+                sys.exit(f"Flow error {visit_pressreader.__name__} ; {error_msg}")
+
         logout_pressreader(page)
 
     except Exception as e:
@@ -39,41 +56,41 @@ def visit_pressreader(
         sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
 
 
-def login_pressreader(page: Page, pressreader_auth: str):
+def login_pressreader(p: Page, pressreader_auth: Tuple):
     try:
         print("Logging into Pressreader...")
-        username, password = pressreader_auth[0], pressreader_auth[1]
+        username, password = pressreader_auth
 
-        page.fill("input[type='email']", username, timeout=0)
-        page.fill("input[type='password']", password, timeout=0)
+        p.fill("input[type='email']", username, timeout=0)
+        p.fill("input[type='password']", password, timeout=0)
 
         # Unchecking `stay signed in checkbox`
-        stay_signed_in_checkbox = page.wait_for_selector(".checkbox")
+        stay_signed_in_checkbox = p.wait_for_selector(".checkbox")
         if stay_signed_in_checkbox.is_checked():
             stay_signed_in_checkbox.click()
 
         # Sign in procedure
-        submit_button = page.wait_for_selector(
+        submit_button = p.wait_for_selector(
             "xpath=//div[@class='pop-group']/a[@role='link']"
         )
         submit_button.click()
-        subscribe_to_login_event(page)
+        subscribe_to_login_event(p)
 
         # Checking whether credentials were wrong
-        failed_login_procedure(page)
+        failed_login_procedure(p)
 
     except Exception as e:
         if not NOTIFY.disabled:
             NOTIFY.send_message(f"Error in {login_pressreader.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot(page, "error")
+            NOTIFY.screenshot_client.take_screenshot(p, "error")
             NOTIFY.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
 
 
-def handle_publication_button(page: Page):
+def handle_publication_button(p: Page):
     try:
-        publication_button = page.wait_for_selector(
+        publication_button = p.wait_for_selector(
             "xpath=//label[@data-bind='click: selectTitle']"
         )
         publication_button.click()
@@ -82,12 +99,32 @@ def handle_publication_button(page: Page):
         pass
 
 
-def logout_pressreader(page: Page):
+def verify_execution_flow(p: Page) -> Tuple:
+    welcome_message = p.locator(".infomsg-optional")
+
+    if not welcome_message:
+        return False, "Error in welcome message filtering!"
+
+    correct_flow_days_reset = 6
+
+    days_validation_list = [
+        int(n) for n in welcome_message.inner_text().split("day")[0] if n.isdigit()
+    ]
+
+    if len(days_validation_list) == 0:
+        return False, "Error in validation extraction!"
+
+    days = int("".join(map(str, days_validation_list)))
+
+    return days == correct_flow_days_reset, None
+
+
+def logout_pressreader(p: Page):
     try:
-        profile_dialog_menu = page.wait_for_selector(".userphoto-title")
+        profile_dialog_menu = p.wait_for_selector(".userphoto-title")
         profile_dialog_menu.click()
 
-        logout_item = page.wait_for_selector(".pri-logout")
+        logout_item = p.wait_for_selector(".pri-logout")
         logout_item.click()
     except TimeoutError:
         pass

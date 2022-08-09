@@ -2,7 +2,7 @@ from http import HTTPStatus
 from unittest import TestCase, mock
 
 from src.chromium import Chromium
-from src.pressreader import subscribe_to_login_event
+from src.pressreader import subscribe_to_login_event, verify_execution_flow
 
 
 class TestPressreader(TestCase):
@@ -12,10 +12,6 @@ class TestPressreader(TestCase):
         self.chromium.context.new_page()
         self.page = self.chromium.context.pages[0]
         self.page.goto("https:///www.google.com")
-
-    # def tearDown(self) -> None:
-    #     breakpoint()
-    #     self.chromium.clean()
 
     @mock.patch("src.pressreader.NOTIFY")
     @mock.patch("src.pressreader.chromium")
@@ -52,9 +48,46 @@ class TestPressreader(TestCase):
         self, clean_mock, global_notifier_mock
     ):
         global_notifier_mock.disabled = False
+        clean_mock.clean.return_value = "mocking clean call"
         resource_url_not_routed = "https://www.example.com/ThisIsGoingToBeA404"
 
         subscribe_to_login_event(self.page)
         self.chromium.visit_site(page=self.page, url=resource_url_not_routed)
 
         assert global_notifier_mock.called is False
+
+    @mock.patch("src.pressreader.NOTIFY")
+    @mock.patch("src.pressreader.chromium")
+    @mock.patch("src.pressreader.Page.locator")
+    def test_access_information_retrieved_correctly(
+        self, page_html_mock, clean_mock, global_notifier_mock
+    ):
+        global_notifier_mock.disabled = False
+        clean_mock.clean.return_value = "mocking clean call"
+        page_html_mock.return_value.inner_text.return_value = (
+            "Complimentary access: 6 days"
+        )
+
+        mocked_resource_url = "https://www.example.com/catalog"
+
+        self.chromium.visit_site(page=self.page, url=mocked_resource_url)
+
+        assert verify_execution_flow(self.page)[0] is True
+
+    @mock.patch("src.pressreader.NOTIFY")
+    @mock.patch("src.pressreader.chromium")
+    @mock.patch("src.pressreader.Page.locator")
+    def test_access_information_retrieved_signifies_wrong_execution_flow(
+        self, page_html_mock, clean_mock, global_notifier_mock
+    ):
+        global_notifier_mock.disabled = False
+        clean_mock.clean.return_value = "mocking clean call"
+        page_html_mock.return_value.inner_text.return_value = (
+            "Complimentary access: 4 days"
+        )
+
+        mocked_resource_url = "https://www.example.com/catalog"
+
+        self.chromium.visit_site(page=self.page, url=mocked_resource_url)
+
+        assert verify_execution_flow(self.page)[0] is False

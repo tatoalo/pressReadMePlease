@@ -16,16 +16,16 @@ TIMEOUT = 30000
 
 PROJECT_ROOT = Path(__file__).parent
 env_path = Path(PROJECT_ROOT / "notification_service.env")
-if env_path.is_file():
-    load_dotenv(dotenv_path=env_path)
-    TELEGRAM_BASE_URL = os.getenv("TELEGRAM_BASE_URL")
-    TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-    TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+# if env_path.is_file():
+#     load_dotenv(dotenv_path=env_path)
+#     TELEGRAM_BASE_URL = os.getenv("TELEGRAM_BASE_URL")
+#     TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+#     TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-    NOTIFY = Notifier(TELEGRAM_BASE_URL, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
-    NOTIFY.screenshot_client = Screenshot(NOTIFY, path=PROJECT_ROOT)
-else:
-    NOTIFY = Notifier()
+#     NOTIFY = Notifier(TELEGRAM_BASE_URL, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
+#     NOTIFY.screenshot_client = Screenshot(NOTIFY, path=PROJECT_ROOT)
+# else:
+NOTIFY = Notifier()
 
 
 def config_page(page: Page):
