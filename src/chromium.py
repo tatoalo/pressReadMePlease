@@ -1,10 +1,7 @@
 import os
 import sys
 import weakref
-from pathlib import Path
 from typing import Optional, Tuple
-
-import _pickle as pickle
 
 from playwright.sync_api import Page, Response, sync_playwright
 
@@ -13,7 +10,7 @@ from typing_extensions import Self
 
 from notify import Notifier
 
-PROJECT_ROOT = Path(__file__).parent
+from src import PROJECT_ROOT
 
 
 class Chromium(object):

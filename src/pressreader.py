@@ -48,7 +48,7 @@ def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
         sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
 
 
-def login_pressreader(p: Page, pressreader_auth: Tuple):
+def login_pressreader(p: Page, pressreader_auth: Tuple[str, str]):
     try:
         print("Logging into Pressreader...")
         username, password = pressreader_auth
@@ -96,8 +96,6 @@ def verify_execution_flow(p: Page) -> Tuple:
     if not welcome_message:
         return False, "Error in welcome message filtering!"
 
-    correct_flow_days_reset = 6
-
     days_validation_list = [
         int(n) for n in welcome_message.inner_text().split("day")[0] if n.isdigit()
     ]
@@ -107,7 +105,7 @@ def verify_execution_flow(p: Page) -> Tuple:
 
     days = int("".join(map(str, days_validation_list)))
 
-    return days == correct_flow_days_reset, None
+    return days == CORRECT_FLOW_DAYS_RESET, None
 
 
 def logout_pressreader(p: Page):

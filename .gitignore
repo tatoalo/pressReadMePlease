@@ -10,6 +10,7 @@ Makefile
 Dockerfile_*
 *.zip
 *.png
+config.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,21 +1,17 @@
-import os
-from pathlib import Path
+# from pathlib import Path
 
-from dotenv import load_dotenv
 from playwright.sync_api import Page
 
 from chromium import Chromium
 from mlol import visit_MLOL
-from parse_credentials import extract_keys
 from pressreader import visit_pressreader
-from screenshot import Screenshot
 from src import CONFIGURATION, NOTIFIER, TIMEOUT
 
-# Timeout in ms
-TIMEOUT = 30000
 
-PROJECT_ROOT = Path(__file__).parent
-env_path = Path(PROJECT_ROOT / "notification_service.env")
+# PROJECT_ROOT = Path(__file__).parent
+# env_path = Path(PROJECT_ROOT / "notification_service.env")
+
+# TODO: re-enable this
 # if env_path.is_file():
 #     load_dotenv(dotenv_path=env_path)
 #     TELEGRAM_BASE_URL = os.getenv("TELEGRAM_BASE_URL")
@@ -36,19 +32,20 @@ def config_page(page: Page):
 
 
 def main():
-    # Retrieve credentials and MLOL entrypoint
-    mlol_link, mlol_credentials, pressreader_credentials = extract_keys(
-        path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY
+    mlol_link = CONFIGURATION.mlol_website
+    mlol_credentials = (
+        CONFIGURATION.mlol_username,
+        CONFIGURATION.mlol_password,
+    )
+    pressreader_credentials = (
+        CONFIGURATION.pressreader_username,
+        CONFIGURATION.pressreader_password,
     )
 
     chromium = Chromium(headless=False, trace=True, timeout=TIMEOUT, notifier=NOTIFIER)
     chromium.context.on("page", config_page)
     chromium.context.new_page()
-    pressreader_tab = visit_MLOL(
-        mlol_entrypoint=mlol_link,
-        mlol_auth=mlol_credentials,
-        notification_service=NOTIFY,
-    )
+    pressreader_tab = visit_MLOL(mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials)
 
     visit_pressreader(
         page=pressreader_tab,
