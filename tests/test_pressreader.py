@@ -13,7 +13,7 @@ class TestPressreader(TestCase):
         self.page = self.chromium.context.pages[0]
         self.page.goto("https:///www.google.com")
 
-    @mock.patch("src.pressreader.NOTIFY")
+    @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
     @mock.patch("src.pressreader.sys.exit")
     def test_access_forbidden_login_is_captured(
@@ -42,7 +42,7 @@ class TestPressreader(TestCase):
         )
         assert global_notifier_mock.send_message.called
 
-    @mock.patch("src.pressreader.NOTIFY")
+    @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
     def test_access_forbidden_not_captured_with_different_endpoint(
         self, clean_mock, global_notifier_mock
@@ -56,7 +56,7 @@ class TestPressreader(TestCase):
 
         assert global_notifier_mock.called is False
 
-    @mock.patch("src.pressreader.NOTIFY")
+    @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
     @mock.patch("src.pressreader.Page.locator")
     def test_access_information_retrieved_correctly(
@@ -74,7 +74,7 @@ class TestPressreader(TestCase):
 
         assert verify_execution_flow(self.page)[0] is True
 
-    @mock.patch("src.pressreader.NOTIFY")
+    @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
     @mock.patch("src.pressreader.Page.locator")
     def test_access_information_retrieved_signifies_wrong_execution_flow(

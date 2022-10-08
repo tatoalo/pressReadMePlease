@@ -6,10 +6,10 @@ from playwright.sync_api import Page
 
 from chromium import Chromium
 from mlol import visit_MLOL
-from notify import Notifier
 from parse_credentials import extract_keys
 from pressreader import visit_pressreader
 from screenshot import Screenshot
+from src import CONFIGURATION, NOTIFIER, TIMEOUT
 
 # Timeout in ms
 TIMEOUT = 30000
@@ -25,7 +25,7 @@ env_path = Path(PROJECT_ROOT / "notification_service.env")
 #     NOTIFY = Notifier(TELEGRAM_BASE_URL, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
 #     NOTIFY.screenshot_client = Screenshot(NOTIFY, path=PROJECT_ROOT)
 # else:
-NOTIFY = Notifier()
+# NOTIFY = Notifier()
 
 
 def config_page(page: Page):
@@ -40,7 +40,8 @@ def main():
     mlol_link, mlol_credentials, pressreader_credentials = extract_keys(
         path=PROJECT_ROOT / "auth_data.txt", notification_service=NOTIFY
     )
-    chromium = Chromium(headless=True, trace=True, timeout=TIMEOUT, notifier=NOTIFY)
+
+    chromium = Chromium(headless=False, trace=True, timeout=TIMEOUT, notifier=NOTIFIER)
     chromium.context.on("page", config_page)
     chromium.context.new_page()
     pressreader_tab = visit_MLOL(
@@ -52,7 +53,6 @@ def main():
     visit_pressreader(
         page=pressreader_tab,
         pressreader_auth=pressreader_credentials,
-        notification_service=NOTIFY,
     )
     print("*** Automation flow has terminated correctly ***")
     chromium.clean()

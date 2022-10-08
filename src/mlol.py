@@ -5,22 +5,17 @@ from playwright.sync_api import Page
 from playwright.sync_api import TimeoutError
 
 from chromium import Chromium
-from notify import Notifier
+from src import NOTIFIER
 
-NOTIFY = Notifier()
 chromium = None
 
 
 def visit_MLOL(
     mlol_entrypoint: str = "",
     mlol_auth: List[str] = [],
-    notification_service: Notifier = None,
 ) -> Page:
     global chromium
     chromium = Chromium.get_chromium()
-    if notification_service is not None:
-        global NOTIFY
-        NOTIFY = notification_service
 
     print("Visiting MLOL...")
     page = chromium.context.pages[0]
@@ -49,10 +44,9 @@ def perform_login(page: Page, mlol_auth: List[str]):
         failed_login_procedure(page)
 
     except Exception as e:
-        if not NOTIFY.disabled:
-            NOTIFY.send_message(f"Error in {perform_login.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot(page, "error")
-            NOTIFY.screenshot_client.remove_screenshot()
+        NOTIFIER.send_message(f"Error in {perform_login.__name__} ; {e}")
+        NOTIFIER.screenshot_client.take_screenshot(page, "error")
+        NOTIFIER.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
         sys.exit(f"Element not found! {perform_login.__name__} ; {e}")
 
@@ -62,8 +56,7 @@ def failed_login_procedure(page: Page):
         warning_failed_login = page.text_content(".page-title").lower()
         if "avviso" in warning_failed_login:
             chromium.clean(debug_trace=True)
-            if not NOTIFY.disabled:
-                NOTIFY.send_message("Wrong MLOL credentials!")
+            NOTIFIER.send_message("Wrong MLOL credentials!")
             sys.exit("Login failed, please check your MLOL credentials!")
     except TimeoutError:
         pass
@@ -96,10 +89,9 @@ def navigate_to_newspapers(page: Page) -> Page:
         return page_pressreader
 
     except Exception as e:
-        if not NOTIFY.disabled:
-            NOTIFY.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
-            NOTIFY.screenshot_client.take_screenshot(page, "error")
-            NOTIFY.screenshot_client.remove_screenshot()
+        NOTIFIER.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
+        NOTIFIER.screenshot_client.take_screenshot(page, "error")
+        NOTIFIER.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
         sys.exit(f"Error in {navigate_to_newspapers.__name__} ; {e}")
 
@@ -108,10 +100,9 @@ def verify_modal_presence(page: Page):
     try:
         page.wait_for_selector("#FavModal")
         print("Modal found on MLOL entry")
-        if not NOTIFY.disabled:
-            NOTIFY.send_message("Modal found in MLOL")
-            NOTIFY.screenshot_client.take_screenshot(page, "modal")
-            NOTIFY.screenshot_client.remove_screenshot()
+        NOTIFIER.send_message("Modal found in MLOL")
+        NOTIFIER.screenshot_client.take_screenshot(page, "modal")
+        NOTIFIER.screenshot_client.remove_screenshot()
 
         # Retrieving modal dismissal button
         modal_dismissal_button = page.locator(
