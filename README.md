@@ -15,7 +15,7 @@ Using MLOL and PressReader to read newspapers from all over the world is pretty 
 
 With pressReadMePlease you can automate this, **set it and forget it!**.
 
-By default the authentication token updating procedure will launch every Friday at 2.30am, of course you can edit this scheduling in the related crontab file.
+By default the authentication token updating procedure will launch every Friday at 3am, of course you can edit this scheduling in the related crontab file.
 
 ## Quick Start w/ Docker
 
@@ -77,7 +77,3 @@ The environment variables file can be added with the aforementioned modalities, 
 
 ### Watchtower support
 If you want, you can run this beside [Watchtower](https://github.com/containrrr/watchtower) which allows you to automatically keep all your images up-to-date.
-
-## Clone the repo
-
-You can clone the repo and launch it as is (requires *Chromium, Playwright and Requests*).
