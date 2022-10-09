@@ -1,8 +1,7 @@
+import sys
 from typing import Optional
 
 from pydantic import BaseModel, validator
-
-import sys
 
 
 class Configuration(BaseModel):
@@ -28,12 +27,3 @@ class Configuration(BaseModel):
         if not chat_id.lstrip("-").isdigit():
             sys.exit("Telegram chat ID value not valid!")
         return chat_id
-
-
-# if not os.path.exists(CONFIG_PATH):
-#             logging.error(f"Configuration file not found in path `{CONFIG_PATH}`")
-#             sys.exit(1)
-
-#         data = None
-#         with open(CONFIG_PATH, "rb") as f:
-#             data = tomlkit.load(f)
