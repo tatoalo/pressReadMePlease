@@ -11,4 +11,4 @@ password = "password"
 [notification_service]
 TELEGRAM_BASE_URL = "https://api.telegram.org/bot"
 TELEGRAM_TOKEN = "token/"
-TELEGRAM_CHAT_ID = 6259
+TELEGRAM_CHAT_ID = 6942
