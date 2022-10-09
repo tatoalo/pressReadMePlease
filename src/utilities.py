@@ -12,9 +12,10 @@ EXAMPLE_CONFIG = "config_example.toml"
 def load_configuration(*, path: Path = "config.toml") -> Configuration:
     if not os.path.exists(path):
         print(f"Configuration file not found in path `{path}`")
-        if not os.path.exists("config_example.toml"):
+        if not os.path.exists(EXAMPLE_CONFIG):
             print(f"Couldn't even find the example config at `{path}`")
             sys.exit(1)
+        path = EXAMPLE_CONFIG
 
     with open(path, "rb") as f:
         data = load(f)
