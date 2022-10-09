@@ -6,11 +6,15 @@ from screenshot import Screenshot
 import os
 import sys
 
+EXAMPLE_CONFIG = "config_example.toml"
+
 
 def load_configuration(*, path: Path = "config.toml") -> Configuration:
     if not os.path.exists(path):
         print(f"Configuration file not found in path `{path}`")
-        sys.exit(1)
+        if not os.path.exists("config_example.toml"):
+            print(f"Couldn't even find the example config at `{path}`")
+            sys.exit(1)
 
     with open(path, "rb") as f:
         data = load(f)
