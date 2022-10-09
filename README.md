@@ -40,7 +40,7 @@ Configuration example:
 
 ```toml
 [mlol]
-website = "mlol_web.site"
+website = "example.medialibrary.it"
 username = "username"
 password = "password"
 
@@ -56,9 +56,9 @@ In order to receive telegram notifications about runtime errors, add this sectio
 ```toml
 # Optional
 [notification_service]
-TELEGRAM_BASE_URL = "https://api.telegram.org/bot"
-TELEGRAM_TOKEN = "token/"
-TELEGRAM_CHAT_ID = 6942
+telegram_base_url = "https://api.telegram.org/bot"
+telegram_token = "token/"
+telegram_chat_id = 6942
 ```
 
 Additionally, support for **attaching screenshots** has also been implemented.
