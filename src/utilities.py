@@ -3,9 +3,15 @@ from pathlib import Path
 from configuration import Configuration
 from notify import Notifier
 from screenshot import Screenshot
+import os
+import sys
 
 
 def load_configuration(*, path: Path = "config.toml") -> Configuration:
+    if not os.path.exists(path):
+        print(f"Configuration file not found in path `{path}`")
+        sys.exit(1)
+
     with open(path, "rb") as f:
         data = load(f)
 
