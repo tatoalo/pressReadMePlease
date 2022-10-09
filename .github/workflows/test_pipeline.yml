@@ -28,7 +28,7 @@ jobs:
         run: |
           pip install poetry
           poetry update
-          poetry install
+          poetry install --no-root
 
       - name: Lint with flake8
         run: |
