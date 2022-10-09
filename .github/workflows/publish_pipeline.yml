@@ -11,9 +11,6 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10.4"]
 
     steps:
       - name: Checkout
@@ -26,7 +23,7 @@ jobs:
           images: |
             tatoalo/pressreader-automation
           tags: |
-            type=semver,pattern={{version}}
+            type=semver,pattern=v{{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
 
