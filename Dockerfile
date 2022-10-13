@@ -1,8 +1,9 @@
 FROM ubuntu:20.04
 
-ENV TZ=Europe/Paris
+ENV PYTHONPATH="/"
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=Europe/Paris
 
 COPY src/*.py src/
 
