@@ -5,8 +5,8 @@ import requests
 
 class Notifier:
     def __init__(self, url=None, token=None, chat_id=None, screenshot_client=None):
-        if url is not None and token is not None:
-            self.api_url = url+token
+        if url is not None and token is not None and chat_id is not None:
+            self.api_url = url + token
             self.disabled = False
         else:
             self.api_url = ""
@@ -16,22 +16,17 @@ class Notifier:
 
     def send_message(self, message: str):
         if self.disabled is False:
-            payload = {'chat_id': self.chat_id, 'text': message}
-            requests.post(self.api_url + 'sendMessage', data=payload)
+            payload = {"chat_id": self.chat_id, "text": message}
+            requests.post(self.api_url + "sendMessage", data=payload)
 
     def send_image(self, image_location: Path):
         if self.disabled is False:
-            payload = {'chat_id': self.chat_id}
-            files = [
-                ('photo', open(image_location, 'rb'))
-            ]
-            headers = {}
-            requests.post(self.api_url + 'sendPhoto', data=payload, files=files)
+            payload = {"chat_id": self.chat_id}
+            files = [("photo", open(image_location, "rb"))]
+            requests.post(self.api_url + "sendPhoto", data=payload, files=files)
 
     def send_binary(self, binary_path: Path):
         if self.disabled is False:
-            payload = {'chat_id': self.chat_id}
-            files = [
-                ('document', open(binary_path, 'rb'))
-            ]
-            requests.post(self.api_url + 'sendDocument', data=payload, files=files)
+            payload = {"chat_id": self.chat_id}
+            files = [("document", open(binary_path, "rb"))]
+            requests.post(self.api_url + "sendDocument", data=payload, files=files)

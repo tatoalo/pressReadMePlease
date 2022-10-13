@@ -1,38 +1,32 @@
 import os
-from pathlib import Path
+import sys
+import weakref
+from typing import Optional, Tuple
 
-from playwright.sync_api import sync_playwright, Page, Response
+from playwright.sync_api import Page, Response, sync_playwright
+
+# Native in 3.11 (https://peps.python.org/pep-0673/)
+from typing_extensions import Self
 
 from notify import Notifier
 
-PROJECT_ROOT = Path(__file__).parent
-chromium = None
+from src import PROJECT_ROOT
 
 
-class Singleton(type):
-    _instances = {}
+class Chromium(object):
+    _instance = []
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-class Chromium(metaclass=Singleton):
-
-    def __init__(self,
-                 headless: bool = True,
-                 trace: bool = False,
-                 timeout: int = 0,
-                 notifier: Notifier = None):
+    def __init__(
+        self,
+        headless: bool = True,
+        trace: bool = False,
+        timeout: int = 0,
+        notifier: Notifier = None,
+    ):
         self.trace = trace
         self.playwright = sync_playwright().start()
-        self.browser = self.playwright.chromium.launch(
-            headless=headless
-        )
-        self.context = self.browser.new_context(
-            locale='en-GB'
-        )
+        self.browser = self.playwright.chromium.launch(headless=headless)
+        self.context = self.browser.new_context(locale="en-GB")
         self.context.clear_cookies()
 
         self.notifier = notifier
@@ -42,32 +36,52 @@ class Chromium(metaclass=Singleton):
         if self.trace:
             self.context.tracing.start(screenshots=True, snapshots=True)
 
+    def __new__(
+        cls,
+        headless: bool = True,
+        trace: bool = False,
+        timeout: int = 0,
+        notifier: Notifier = None,
+    ) -> Self:
+        if Chromium._instance:
+            cls.__check_only_one_instance_alive()
+            return weakref.proxy(Chromium._instance[0])
+        else:
+            instance_local = super().__new__(cls)
+            Chromium._instance.append(instance_local)
+            return instance_local
+
     def clean(self, debug_trace=False):
         if self.trace and debug_trace:
             self.__export_trace()
         print("Quitting Chromium...")
-        self.context.close()
-        self.browser.close()
+        if len(Chromium._instance) != 0:
+            self.context.close()
+            self.browser.close()
+            self.playwright.stop()
+            self._instance.remove(self)
 
     @staticmethod
     def get_chromium():
-        global chromium
+        if len(Chromium._instance) == 0:
+            return Chromium()
 
-        if chromium is None:
-            chromium = Chromium()
+        return Chromium._instance[0]
 
-        return chromium
-
-    def visit_site(self, page: Page, url: str) -> None:
+    def visit_site(self, page: Page, url: str) -> Optional[Response]:
         response = page.goto(url)
 
         # If I get a status different from 200, I fail and communicate that
         response_check, status = self.__check_response_status(response)
         if not response_check:
-            self.notifier.send_message(f"Error, {url} not reachable, got status {status}")
-            self.notifier.screenshot_client.take_screenshot(page, 'error')
+            self.notifier.send_message(
+                f"Error, {url} not reachable, got status {status}"
+            )
+            self.notifier.screenshot_client.take_screenshot(page, "error")
             self.notifier.screenshot_client.remove_screenshot()
             self.clean()
+
+        return response
 
     def __export_trace(self) -> None:
         trace_path = PROJECT_ROOT / "debug_trace.zip"
@@ -79,8 +93,12 @@ class Chromium(metaclass=Singleton):
             os.remove(trace_path)
 
     @staticmethod
-    def __check_response_status(response: Response) -> (bool, int):
+    def __check_response_status(response: Response) -> Tuple[bool, int]:
         if response.status != 200:
             print(f"Found status {response.status} for {response.url}")
             return False, response.status
         return True, response.status
+
+    def __check_only_one_instance_alive():
+        if len(Chromium._instance) != 1:
+            sys.exit("Weird behaviour, too many alive references...exiting...")

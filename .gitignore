@@ -1,3 +1,6 @@
+# macOS-specific
+.DS_Store
+
 # Project-specific secret
 *.txt
 .vscode/
@@ -6,6 +9,8 @@
 Makefile
 Dockerfile_*
 *.zip
+*.png
+config.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

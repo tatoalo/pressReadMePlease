@@ -1,0 +1,14 @@
+[mlol]
+website = "example.medialibrary.it"
+username = "username"
+password = "password"
+
+[pressreader]
+username = "username"
+password = "password"
+
+# Optional
+[notification_service]
+telegram_base_url = "https://api.telegram.org/bot"
+telegram_token = "token/"
+telegram_chat_id = 6942
