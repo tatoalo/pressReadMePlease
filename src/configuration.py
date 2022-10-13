@@ -24,6 +24,6 @@ class Configuration(BaseModel):
 
     @validator("telegram_chat_id")
     def chat_id_must_be_a_valid_number(cls, chat_id) -> Optional[str]:
-        if not chat_id.lstrip("-").isdigit():
+        if chat_id and not chat_id.lstrip("-").isdigit():
             sys.exit("Telegram chat ID value not valid!")
         return chat_id
