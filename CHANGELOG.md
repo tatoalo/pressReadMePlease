@@ -1,4 +1,21 @@
-# Change Log
+# Changelog
+
+## [v3.0.0] - 2022-10-13
+
+* ☁️ CF workaround implemented
+* 🛂 Integrated control flow
+* 🕶 Added black support
+* 📖 Updated reqs
+* 🏷 Supported multiple tags
+* 🏗 Built CI/CD pipeline
+* 🪪 Implemented brand new credentials flow
+* 🖥 Entirely rewritten Chromium class
+* 📬 Entirely rewritten logic around Notifier instantiation
+* 🐳 Improved Dockerfile
+* 🔖 Migrated deps management to Poetry (still in hybrid mode, not entirely depending on it)
+* 🧪 Extended and improved testing suite
+* ⏫ Upgraded to Playwright `v1.26.1`
+
 
 ## 2.0.4 - 2022-05-29
 
@@ -21,7 +38,7 @@
 
 ## 2.0.0 - 2022-03-10
 
-* 🔥 Migrated *pressReadMePlease* to [Playwright](https://playwright.dev) 
+* 🔥 Migrated *pressReadMePlease* to [Playwright](https://playwright.dev)
 * ⚡️ Faster automation flow
 * 💤 Removed manual `time.sleep` patterns that were previously used, wasting CPU cycles
 * 💪🏻 More robust items selections and querying
@@ -33,3 +50,6 @@
 ## 1.0.0 - 2022-02-26
 
  * Released last supported Selenium-based docker image
+
+
+[v3.0.0]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.0
