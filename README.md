@@ -9,7 +9,7 @@
 
   [![MIT](https://img.shields.io/github/license/tatoalo/pressReadMePlease)](https://github.com/tatoalo/pressReadMePlease) [![Pulls from DockerHub](https://img.shields.io/docker/pulls/tatoalo/pressreader-automation.svg)](https://hub.docker.com/r/tatoalo/pressreader-automation) [![Docker Image Version](https://img.shields.io/docker/v/tatoalo/pressreader-automation?sort=semver)][hub]
 
-[hub]: https://hub.docker.com/r/tatoalo/torrent-manager/
+[hub]: https://hub.docker.com/r/tatoalo/pressreader-automation/
 </div>
 
 Using MLOL and PressReader to read newspapers from all over the world is pretty handy, if you use the mobile apps only, though, it may become pretty painful to remember once every week to manually login into MLOL and then PressReader from the desktop version so that PressReader doesn't throw you out of their system.
