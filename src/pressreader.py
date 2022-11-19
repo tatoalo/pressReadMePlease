@@ -5,7 +5,7 @@ from typing import Tuple
 from playwright.sync_api import Page, Response, TimeoutError
 
 from chromium import Chromium
-from src import NOTIFIER, CORRECT_FLOW_DAYS_RESET
+from src import NOTIFIER, CORRECT_FLOW_DAYS_RESET, logging
 
 chromium = None
 
@@ -14,7 +14,7 @@ def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
     global chromium
     chromium = Chromium.get_chromium()
 
-    print("Visiting Pressreader...")
+    logging.debug("Visiting Pressreader...")
 
     try:
         handle_publication_button(page)
@@ -50,7 +50,7 @@ def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
 
 def login_pressreader(p: Page, pressreader_auth: Tuple[str, str]):
     try:
-        print("Logging into Pressreader...")
+        logging.debug("Logging into Pressreader...")
         username, password = pressreader_auth
 
         p.fill("input[type='email']", username, timeout=0)

@@ -1,19 +1,22 @@
-from tomlkit import load
+import os
+import sys
 from pathlib import Path
+
+from tomlkit import load
+
 from configuration import Configuration
 from notify import Notifier
 from screenshot import Screenshot
-import os
-import sys
+from src import logging
 
 EXAMPLE_CONFIG = "config_example.toml"
 
 
 def load_configuration(*, path: Path = "config.toml") -> Configuration:
     if not os.path.exists(path):
-        print(f"Configuration file not found in path `{path}`")
+        logging.debug(f"Configuration file not found in path `{path}`")
         if not os.path.exists(EXAMPLE_CONFIG):
-            print(f"Couldn't even find the example config at `{path}`")
+            logging.debug(f"Couldn't even find the example config at `{path}`")
             sys.exit(1)
         path = EXAMPLE_CONFIG
 

@@ -16,7 +16,7 @@ Using MLOL and PressReader to read newspapers from all over the world is pretty 
 
 With pressReadMePlease you can automate this, **set it and forget it!**.
 
-By default the authentication token updating procedure will launch every Friday at 3am, of course you can edit this scheduling in the related crontab file.
+By default the authentication token updating procedure will launch every Friday at 3.20am, of course you can edit this scheduling in the related crontab file.
 
 ## Quick Start w/ Docker
 
@@ -30,6 +30,18 @@ and subsequently launch the container with:
 
 ```
 docker run --name pressreader -itd --restart unless-stopped -v config.toml:/src/config.toml tatoalo/pressreader-automation
+```
+
+#### Docker Compose
+
+```yaml
+version: '3.8'
+services:
+  pressreadmeplease:
+    image: tatoalo/pressreader-automation
+    restart: unless-stopped
+    volumes:
+      - /path/to/my/configuration/file:/config/file
 ```
 
 ### Authentication Data

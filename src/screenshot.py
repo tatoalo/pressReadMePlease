@@ -4,6 +4,7 @@ from pathlib import Path
 from playwright.sync_api import Page
 
 from notify import Notifier
+from src import logging
 
 
 class Screenshot:
@@ -16,7 +17,7 @@ class Screenshot:
     def take_screenshot(
         self, page: Page, filename: str = "screenshot", full_page: bool = False
     ):
-        print(" ### Taking screenshot ###")
+        logging.debug(" ### Taking screenshot ###")
         self.screenshot_path = self.path / f"{filename}.png"
 
         page.screenshot(path=self.screenshot_path, full_page=full_page)

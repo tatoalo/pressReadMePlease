@@ -9,8 +9,7 @@ from playwright.sync_api import Page, Response, sync_playwright
 from typing_extensions import Self
 
 from notify import Notifier
-
-from src import PROJECT_ROOT
+from src import PROJECT_ROOT, logging
 
 
 class Chromium(object):
@@ -54,7 +53,7 @@ class Chromium(object):
     def clean(self, debug_trace=False):
         if self.trace and debug_trace:
             self.__export_trace()
-        print("Quitting Chromium...")
+        logging.debug("Quitting Chromium...")
         if len(Chromium._instance) != 0:
             self.context.close()
             self.browser.close()
@@ -95,10 +94,11 @@ class Chromium(object):
     @staticmethod
     def __check_response_status(response: Response) -> Tuple[bool, int]:
         if response.status != 200:
-            print(f"Found status {response.status} for {response.url}")
+            logging.debug(f"Found status {response.status} for {response.url}")
             return False, response.status
         return True, response.status
 
     def __check_only_one_instance_alive():
         if len(Chromium._instance) != 1:
+            logging.error("Weird behaviour, too many alive references...exiting...")
             sys.exit("Weird behaviour, too many alive references...exiting...")
