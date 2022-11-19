@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cron && /bin/bash
+cron -f
