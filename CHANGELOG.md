@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [v3.0.1] - 2022-11-18
+
+* 🐳 Improved Dockerfile
+* 👨‍🔧 Fixed Docker-compose issue
+* 🪵 Added logging support
+
+
 ## [v3.0.0] - 2022-10-13
 
 * ☁️ CF workaround implemented
@@ -53,4 +60,5 @@
  * Released last supported Selenium-based docker image
 
 
+[v3.0.1]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.1
 [v3.0.0]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.0

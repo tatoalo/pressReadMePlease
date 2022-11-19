@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pressreadmeplease"
-version = "3.0.0"
+version = "3.0.1"
 description = "A process for automating PressReader weekly token automagically."
 authors = ["tatoalo <apogliaghi@gmail.com>"]
 license = "MIT"
