@@ -1,5 +1,17 @@
+import logging
 from pathlib import Path
+
 from utilities import load_configuration, load_notifier
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+logging.getLogger("requests").setLevel(logging.INFO)
+logging.getLogger("urllib3").setLevel(logging.INFO)
+logging.getLogger("asyncio").setLevel(logging.INFO)
 
 # ms
 TIMEOUT = 30000

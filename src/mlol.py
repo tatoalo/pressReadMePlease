@@ -1,10 +1,10 @@
 import sys
-from typing import List, Tuple
+from typing import Tuple
 
 from playwright.sync_api import Page, TimeoutError
 
 from chromium import Chromium
-from src import NOTIFIER
+from src import NOTIFIER, logging
 
 chromium = None
 
@@ -16,7 +16,7 @@ def visit_MLOL(
     global chromium
     chromium = Chromium.get_chromium()
 
-    print("Visiting MLOL...")
+    logging.debug("Visiting MLOL...")
     page = chromium.context.pages[0]
     chromium.visit_site(page, mlol_entrypoint)
 
@@ -30,7 +30,7 @@ def visit_MLOL(
 
 
 def perform_login(page: Page, mlol_auth: Tuple[str, str]):
-    print("Logging into MLOL...")
+    logging.debug("Logging into MLOL...")
     username, password = mlol_auth
 
     try:
@@ -98,7 +98,7 @@ def navigate_to_newspapers(page: Page) -> Page:
 def verify_modal_presence(page: Page):
     try:
         page.wait_for_selector("#FavModal")
-        print("Modal found on MLOL entry")
+        logging.debug("Modal found on MLOL entry")
         NOTIFIER.send_message("Modal found in MLOL")
         NOTIFIER.screenshot_client.take_screenshot(page, "modal")
         NOTIFIER.screenshot_client.remove_screenshot()
@@ -108,7 +108,7 @@ def verify_modal_presence(page: Page):
             "//div[@class='modal-footer']/button[@data-dismiss='modal']"
         )
         modal_dismissal_button.click()
-        print("Modal dissmissed correctly!")
+        logging.debug("Modal dissmissed correctly!")
 
     except TimeoutError:
         # No modal found

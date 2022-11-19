@@ -3,7 +3,7 @@ from playwright.sync_api import Page
 from chromium import Chromium
 from mlol import visit_MLOL
 from pressreader import visit_pressreader
-from src import CONFIGURATION, NOTIFIER, TIMEOUT
+from src import CONFIGURATION, NOTIFIER, TIMEOUT, logging
 
 
 def config_page(page: Page):
@@ -33,7 +33,7 @@ def main():
         page=pressreader_tab,
         pressreader_auth=pressreader_credentials,
     )
-    print("*** Automation flow has terminated correctly ***")
+    logging.debug("*** Automation flow has terminated correctly ***")
     chromium.clean()
 
 
