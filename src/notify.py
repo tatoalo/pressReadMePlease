@@ -1,10 +1,17 @@
 from pathlib import Path
+from screenshot import Screenshot
 
 import requests
 
 
 class Notifier:
-    def __init__(self, url=None, token=None, chat_id=None, screenshot_client=None):
+    def __init__(
+        self,
+        url: str = None,
+        token: str = None,
+        chat_id: str = None,
+        project_root: Path = None,
+    ):
         if url is not None and token is not None and chat_id is not None:
             self.api_url = url + token
             self.disabled = False
@@ -12,7 +19,7 @@ class Notifier:
             self.api_url = ""
             self.disabled = True
         self.chat_id = chat_id
-        self.screenshot_client = screenshot_client
+        self.screenshot_client = Screenshot(self, path=project_root)
 
     def send_message(self, message: str):
         if self.disabled is False:
