@@ -8,7 +8,7 @@ from src import logging
 
 
 class Screenshot:
-    def __init__(self, notifier: Type["Notifier"], path: Path):
+    def __init__(self, notifier: Type["Notifier"], path: Path):  # noqa: F821
         self.notifier = notifier
         self.path = path
 

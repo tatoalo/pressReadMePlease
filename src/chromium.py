@@ -20,7 +20,7 @@ class Chromium(object):
         headless: bool = True,
         trace: bool = False,
         timeout: int = 0,
-        notifier: Type["Notifier"] = None,
+        notifier: Type["Notifier"] = None,  # noqa: F821
     ):
         self.trace = trace
         self.playwright = sync_playwright().start()
@@ -40,7 +40,7 @@ class Chromium(object):
         headless: bool = True,
         trace: bool = False,
         timeout: int = 0,
-        notifier: Type["Notifier"] = None,
+        notifier: Type["Notifier"] = None,  # noqa: F821
     ) -> Self:
         if Chromium._instance:
             cls.__check_only_one_instance_alive()
