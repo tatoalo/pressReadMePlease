@@ -91,7 +91,10 @@ def handle_publication_button(p: Page):
 
 
 def verify_execution_flow(p: Page) -> Tuple:
-    welcome_message = p.locator(".infomsg-optional")
+    try:
+        welcome_message = p.locator(".infomsg-optional")
+    except TimeoutError:
+        welcome_message = None
 
     if not welcome_message:
         return False, "Error in welcome message filtering!"
