@@ -52,7 +52,7 @@ Configuration example:
 
 ```toml
 [mlol]
-website = "example.medialibrary.it"
+website = "https://example.medialibrary.it"
 username = "username"
 password = "password"
 
