@@ -3,7 +3,7 @@
 
   # pressReadMePlease
   🦄 Automagically🪄 refresh PressReader weekly token.
-  (currently tested against 🐍 `3.8.4`, `3.9` & `3.10.4`)
+  (currently tested against 🐍 `3.9`, `3.10` & `3.11.1`)
   <br/>
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
 
