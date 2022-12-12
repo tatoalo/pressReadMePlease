@@ -3,7 +3,7 @@
 
   # pressReadMePlease
   🦄 Automagically🪄 refresh PressReader weekly token.
-  (currently tested against 🐍 `3.8.4`, `3.9` & `3.10.4`)
+  (currently tested against 🐍 `3.9`, `3.10` & `3.11.1`)
   <br/>
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
 
@@ -52,7 +52,7 @@ Configuration example:
 
 ```toml
 [mlol]
-website = "example.medialibrary.it"
+website = "https://example.medialibrary.it"
 username = "username"
 password = "password"
 
@@ -78,3 +78,25 @@ This action makes sense just in certain flows (missing button that was expected 
 
 ### Watchtower support
 If you want, you can run this beside [Watchtower](https://github.com/containrrr/watchtower) which allows you to automatically keep all your images up-to-date.
+
+## Run w/out Docker
+If you want, of course, you can also run `pressReadMePlease` without a Dockerized environment.
+
+Setup your python environment as you see fit, if you want to use `poetry`, a `venv` will be automatically created:
+
+```bash
+1. Clone repo locally
+2. cd inside project directory
+
+$ pip install poetry
+$ poetry update && poetry install
+$ poetry run playwright install chromium
+$ poetry run playwright install-deps chromium
+```
+
+You can now launch `pressReadMePlease`
+```bash
+$ PYTHONPATH="." poetry run python /src/pressreadmeplease.py
+```
+
+In order for the program to run periodically, you can setup a cron job and activate it inside any init system you have access to in your distro.

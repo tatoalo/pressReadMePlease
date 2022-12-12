@@ -12,6 +12,8 @@ TEST_PATH = Path(__file__).parent
 class TestScreenshot(TestCase):
     @mock.patch("src.notify.Notifier")
     def setUp(self, notifier_mock) -> None:
+        notifier_mock.disabled = False
+
         self.chromium = Chromium()
         self.chromium.context.new_page()
         self.page = self.chromium.context.pages[0]

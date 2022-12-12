@@ -1,14 +1,14 @@
 import os
 import sys
 import weakref
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Type
 
 from playwright.sync_api import Page, Response, sync_playwright
 
 # Native in 3.11 (https://peps.python.org/pep-0673/)
 from typing_extensions import Self
 
-from notify import Notifier
+# from notify import Notifier
 from src import PROJECT_ROOT, logging
 
 
@@ -20,7 +20,7 @@ class Chromium(object):
         headless: bool = True,
         trace: bool = False,
         timeout: int = 0,
-        notifier: Notifier = None,
+        notifier: Type["Notifier"] = None,  # noqa: F821
     ):
         self.trace = trace
         self.playwright = sync_playwright().start()
@@ -40,7 +40,7 @@ class Chromium(object):
         headless: bool = True,
         trace: bool = False,
         timeout: int = 0,
-        notifier: Notifier = None,
+        notifier: Type["Notifier"] = None,  # noqa: F821
     ) -> Self:
         if Chromium._instance:
             cls.__check_only_one_instance_alive()
