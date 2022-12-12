@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [v3.0.2] - 2022-12-12 🎅🏻 🎄
+
+* 👨‍🔧 Fixed Screenshot client logic
+* 🥽 Safer verification of the execution flow w/out Configuration setup
+* ⏫ Upgraded to Playwright `v1.28.0`
+* 📖 Added instructions for setup w/out Docker
+* 🐍 Introduced support for Python `3.11.1`
+
+
 ## [v3.0.1] - 2022-11-18
 
 * 🐳 Improved Dockerfile
@@ -60,5 +69,6 @@
  * Released last supported Selenium-based docker image
 
 
+[v3.0.2]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.2
 [v3.0.1]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.1
 [v3.0.0]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.0
