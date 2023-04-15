@@ -12,7 +12,7 @@ COPY  pyproject.toml poetry.lock /
 COPY --chmod=777 entrypoint.sh /usr/local/bin
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 python3-distutils python3-pip curl cron vim tzdata && \
+    apt-get install -y --no-install-recommends python3 python3-distutils python3-pip curl cron tzdata && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
     pip3 install --no-cache-dir poetry && poetry update && \
     poetry run pip freeze | xargs pip3 install && \
