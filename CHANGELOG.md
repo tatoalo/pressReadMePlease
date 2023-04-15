@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.0.4] - 2023-04-15
+
+- ⤴️ Migrated to `22.04 LTS` base image
+- ⏫ Upgraded to Playwright `v1.32.1`
+- 🧹 Updated some other dependencies
+
 ## [v3.0.3] - 2023-02-26
 
 - ⏫ Upgraded to Playwright `v1.31.0`
@@ -68,6 +74,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.0.4]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.4
 [v3.0.3]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.3
 [v3.0.2]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.2
 [v3.0.1]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.1
