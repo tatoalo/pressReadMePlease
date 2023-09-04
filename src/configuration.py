@@ -12,9 +12,9 @@ class Configuration(BaseModel):
     pressreader_username: str
     pressreader_password: str
 
-    telegram_base_url: Optional[str]
-    telegram_token: Optional[str]
-    telegram_chat_id: Optional[int]
+    telegram_base_url: Optional[str] = None
+    telegram_token: Optional[str] = None
+    telegram_chat_id: Optional[int] = None
 
     @validator("mlol_website")
     def mlol_website_must_have_mlol_subdomain(cls, website) -> Optional[str]:
