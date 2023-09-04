@@ -21,9 +21,3 @@ class Configuration(BaseModel):
         if "medialibrary.it" not in website:
             sys.exit("MLOL website sanitation failed!")
         return website
-
-    @validator("telegram_chat_id")
-    def chat_id_must_be_a_valid_number(cls, chat_id) -> Optional[str]:
-        if chat_id and not chat_id.lstrip("-").isdigit():
-            sys.exit("Telegram chat ID value not valid!")
-        return chat_id
