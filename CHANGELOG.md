@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.0.6] - 2023-09-04
+
+- ⏫ Upgraded to Playwright `v1.37.0`
+- 🧹 Updated some other dependencies
+- 📖 Updated `Configuration` validators and fixed `telegram_chat_id`
+
 ## [v3.0.5] - 2023-05-28
 
 - ⏫ Upgraded to Playwright `v1.34.0`
@@ -79,6 +85,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.0.6]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.6
 [v3.0.5]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.5
 [v3.0.4]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.4
 [v3.0.3]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.3
