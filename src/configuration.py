@@ -14,7 +14,7 @@ class Configuration(BaseModel):
 
     telegram_base_url: Optional[str]
     telegram_token: Optional[str]
-    telegram_chat_id: Optional[str]
+    telegram_chat_id: Optional[int]
 
     @validator("mlol_website")
     def mlol_website_must_have_mlol_subdomain(cls, website) -> Optional[str]:
