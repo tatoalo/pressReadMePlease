@@ -1,15 +1,17 @@
 <div align="center">
   <img src="./assets/logo.png" width="450" />
 
-  # pressReadMePlease
-  🦄 Automagically🪄 refresh PressReader weekly token.
-  (currently tested against 🐍 `3.9`, `3.10` & `3.11.1`)
-  <br/>
-  [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
+# pressReadMePlease
 
-  [![MIT](https://img.shields.io/github/license/tatoalo/pressReadMePlease)](https://github.com/tatoalo/pressReadMePlease) [![Pulls from DockerHub](https://img.shields.io/docker/pulls/tatoalo/pressreader-automation.svg)](https://hub.docker.com/r/tatoalo/pressreader-automation) [![Docker Image Version](https://img.shields.io/docker/v/tatoalo/pressreader-automation?sort=semver)][hub]
+🦄 Automagically🪄 refresh PressReader weekly token.
+(currently tested against 🐍 `3.9`, `3.10` & `3.11.9`)
+<br/>
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
+
+[![MIT](https://img.shields.io/github/license/tatoalo/pressReadMePlease)](https://github.com/tatoalo/pressReadMePlease) [![Pulls from DockerHub](https://img.shields.io/docker/pulls/tatoalo/pressreader-automation.svg)](https://hub.docker.com/r/tatoalo/pressreader-automation) [![Docker Image Version](https://img.shields.io/docker/v/tatoalo/pressreader-automation?sort=semver)][hub]
 
 [hub]: https://hub.docker.com/r/tatoalo/pressreader-automation/
+
 </div>
 
 Using MLOL and PressReader to read newspapers from all over the world is pretty handy, if you use the mobile apps only, though, it may become pretty painful to remember once every week to manually login into MLOL and then PressReader from the desktop version so that PressReader doesn't throw you out of their system.
@@ -35,7 +37,7 @@ docker run --name pressreader -itd --restart unless-stopped -v config.toml:/src/
 #### Docker Compose
 
 ```yaml
-version: '3.8'
+version: "3.8"
 services:
   pressreadmeplease:
     image: tatoalo/pressreader-automation
@@ -77,9 +79,11 @@ Additionally, support for **attaching screenshots** has also been implemented.
 This action makes sense just in certain flows (missing button that was expected to be found) and will be sent in addition to the error message.
 
 ### Watchtower support
+
 If you want, you can run this beside [Watchtower](https://github.com/containrrr/watchtower) which allows you to automatically keep all your images up-to-date.
 
 ## Run w/out Docker
+
 If you want, of course, you can also run `pressReadMePlease` without a Dockerized environment.
 
 Setup your python environment as you see fit, if you want to use `poetry`, a `venv` will be automatically created:
@@ -95,6 +99,7 @@ $ poetry run playwright install-deps chromium
 ```
 
 You can now launch `pressReadMePlease`
+
 ```bash
 $ PYTHONPATH="." poetry run python /src/pressreadmeplease.py
 ```

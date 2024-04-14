@@ -7,18 +7,18 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8.4"
-playwright = "1.41.0"
+playwright = "1.43.0"
 requests = "2.31.0"
 pyvirtualdisplay = { version = "3.0.0", markers = "sys_platform == 'linux'" }
-typing-extensions = "4.9.0"
-pydantic = "2.5.3"
-tomlkit = "0.12.3"
+typing-extensions = "4.11.0"
+pydantic = "2.7.0"
+tomlkit = "0.12.4"
 
 [tool.poetry.dev-dependencies]
-pytest = "7.4.4"
-black = "23.12.1"
+pytest = "8.1.1"
+black = "24.4.0"
 mock = "5.1.0"
-flake8 = "5.0.4"
+flake8 = "7.0.0"
 
 [build-system]
 requires = ["poetry==1.1.14"]
