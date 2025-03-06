@@ -4,7 +4,8 @@ from typing import Tuple
 from playwright.sync_api import Page, TimeoutError
 
 from chromium import Chromium
-from src import NOTIFIER, logging
+from src import NOTIFIER, WARNING_FAILED_LOGIN_TEXT_ELEMENT, logging
+from error_handling import handle_errors
 
 chromium = None
 
@@ -29,31 +30,23 @@ def visit_MLOL(
     return new_page_tab
 
 
+@handle_errors
 def perform_login(page: Page, mlol_auth: Tuple[str, str]):
     logging.debug("Logging into MLOL...")
     username, password = mlol_auth
 
-    try:
-        page.fill("input[name='lusername']", username, timeout=0)
-        page.fill("input[name='lpassword']", password, timeout=0)
+    page.fill("input[name='lusername']", username, timeout=0)
+    page.fill("input[name='lpassword']", password, timeout=0)
 
-        page.click("input[type='submit']", timeout=0)
+    page.click("input[type='submit']", timeout=0)
 
-        # Checking failed login procedure
-        failed_login_procedure(page)
-
-    except Exception as e:
-        NOTIFIER.send_message(f"Error in {perform_login.__name__} ; {e}")
-        NOTIFIER.screenshot_client.take_screenshot(page, "error")
-        NOTIFIER.screenshot_client.remove_screenshot()
-        chromium.clean(debug_trace=True)
-        sys.exit(f"Element not found! {perform_login.__name__} ; {e}")
+    failed_login_procedure(page)
 
 
 def failed_login_procedure(page: Page):
     try:
         warning_failed_login = page.text_content(".page-title").lower()
-        if "avviso" in warning_failed_login:
+        if WARNING_FAILED_LOGIN_TEXT_ELEMENT in warning_failed_login:
             chromium.clean(debug_trace=True)
             NOTIFIER.send_message("Wrong MLOL credentials!")
             sys.exit("Login failed, please check your MLOL credentials!")
@@ -61,38 +54,31 @@ def failed_login_procedure(page: Page):
         pass
 
 
+@handle_errors
 def navigate_to_newspapers(page: Page) -> Page:
-    try:
-        # Clicking on catalogue
-        typologies_menu_entry = page.query_selector("#caricatip")
-        typologies_menu_entry.click()
+    # Clicking on catalogue
+    typologies_menu_entry = page.query_selector("#caricatip")
+    typologies_menu_entry.click()
 
-        newspapers_section = page.locator(":nth-match(:text('EDICOLA'), 1)")
-        newspapers_section.click()
+    newspapers_section = page.locator(":nth-match(:text('EDICOLA'), 1)")
+    newspapers_section.click()
 
-        # Focusing on Corriere della Sera, safe bet for a pressreader presence
-        corriere_sera = page.locator("text=Corriere della Sera")
-        corriere_sera.nth(0).click()
+    # Focusing on Corriere della Sera, safe bet for a pressreader presence
+    corriere_sera = page.locator("text=Corriere della Sera")
+    corriere_sera.nth(0).click()
 
-        pressreader_submit_button = page.locator(":nth-match(:text('SFOGLIA'), 1)")
+    pressreader_submit_button = page.locator(":nth-match(:text('SFOGLIA'), 1)")
 
-        with chromium.context.expect_page() as pressreader_blank_target:
-            pressreader_submit_button.click()
-        page_pressreader = pressreader_blank_target.value
-        page_pressreader.wait_for_load_state("domcontentloaded")
+    with chromium.context.expect_page() as pressreader_blank_target:
+        pressreader_submit_button.click()
+    page_pressreader = pressreader_blank_target.value
+    page_pressreader.wait_for_load_state("domcontentloaded")
 
-        assert "pressreader" in page_pressreader.title().lower(), Exception(
-            "Failed tab switch"
-        )
+    assert "pressreader" in page_pressreader.title().lower(), Exception(
+        "Failed tab switch"
+    )
 
-        return page_pressreader
-
-    except Exception as e:
-        NOTIFIER.send_message(f"Error in {navigate_to_newspapers.__name__} ; {e}")
-        NOTIFIER.screenshot_client.take_screenshot(page, "error")
-        NOTIFIER.screenshot_client.remove_screenshot()
-        chromium.clean(debug_trace=True)
-        sys.exit(f"Error in {navigate_to_newspapers.__name__} ; {e}")
+    return page_pressreader
 
 
 def verify_modal_presence(page: Page):

@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.0.9] - 2025-03-06
+
+- 🚧 Introduced `handle_errors` decorator to manage common error reporting and cleanup tasks
+- 👨‍🔧 Fixed broken `.btn-hotspot` reference which was leading to useless screenshot + trace reporting
+- ⏫ Upgraded to Playwright `v1.50.0`
+- 🧹 Updated some other dependencies
+
 ## [v3.0.8] - 2024-04-14
 
 - ⏫ Upgraded to Playwright `v1.43.0`
@@ -95,6 +102,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.0.9]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.9
 [v3.0.8]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.8
 [v3.0.7]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.7
 [v3.0.6]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.6
