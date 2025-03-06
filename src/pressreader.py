@@ -6,77 +6,61 @@ from playwright.sync_api import Page, Response, TimeoutError
 
 from chromium import Chromium
 from src import NOTIFIER, CORRECT_FLOW_DAYS_RESET, logging
+from error_handling import handle_errors
 
 chromium = None
 
 
+@handle_errors
 def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
     global chromium
     chromium = Chromium.get_chromium()
 
     logging.debug("Visiting Pressreader...")
 
-    try:
-        handle_publication_button(page)
+    handle_publication_button(page)
 
-        sign_in_button = page.locator(".btn-login")
-        sign_in_button.click()
+    sign_in_button = page.locator(".btn-login")
+    sign_in_button.click()
 
-        login_pressreader(page, pressreader_auth)
+    login_pressreader(page, pressreader_auth)
 
-        hs_button = page.locator(".btn-hotspot")
-        hs_button.click()
+    select_pub_button = page.locator(".btn-action")
+    select_pub_button.click()
 
-        flow_executed_correctly, error_msg = verify_execution_flow(page)
+    flow_executed_correctly, error_msg = verify_execution_flow(page)
 
-        if not flow_executed_correctly:
-            NOTIFIER.send_message(
-                f"Flow was ***NOT** terminated correctly {visit_pressreader.__name__} ; {error_msg}"
-            )
-            NOTIFIER.screenshot_client.take_screenshot(page, "error")
-            NOTIFIER.screenshot_client.remove_screenshot()
-            chromium.clean(debug_trace=True)
-            sys.exit(f"Flow error {visit_pressreader.__name__} ; {error_msg}")
-
-        logout_pressreader(page)
-
-    except Exception as e:
-        NOTIFIER.send_message(f"Error in {visit_pressreader.__name__} ; {e}")
+    if not flow_executed_correctly:
+        NOTIFIER.send_message(
+            f"Flow was ***NOT** terminated correctly {visit_pressreader.__name__} ; {error_msg}"
+        )
         NOTIFIER.screenshot_client.take_screenshot(page, "error")
         NOTIFIER.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
-        sys.exit(f"Element not found! {visit_pressreader.__name__} ; {e}")
+        sys.exit(f"Flow error {visit_pressreader.__name__} ; {error_msg}")
+
+    logout_pressreader(page)
 
 
+@handle_errors
 def login_pressreader(p: Page, pressreader_auth: Tuple[str, str]):
-    try:
-        logging.debug("Logging into Pressreader...")
-        username, password = pressreader_auth
+    logging.debug("Logging into Pressreader...")
+    username, password = pressreader_auth
 
-        p.fill("input[type='email']", username, timeout=0)
-        p.fill("input[type='password']", password, timeout=0)
+    p.fill("input[type='email']", username, timeout=0)
+    p.fill("input[type='password']", password, timeout=0)
 
-        # Unchecking `stay signed in checkbox`
-        stay_signed_in_checkbox = p.wait_for_selector(".checkbox")
-        if stay_signed_in_checkbox.is_checked():
-            stay_signed_in_checkbox.click()
+    stay_signed_in_checkbox = p.wait_for_selector(".checkbox")
+    if stay_signed_in_checkbox.is_checked():
+        stay_signed_in_checkbox.click()
 
-        # Sign in procedure
-        submit_button = p.wait_for_selector(
-            "xpath=//div[@class='pop-group']/a[@role='link']"
-        )
-        submit_button.click()
-        subscribe_to_login_event(p)
+    submit_button = p.wait_for_selector(
+        "xpath=//div[@class='pop-group']/a[@role='link']"
+    )
+    submit_button.click()
+    subscribe_to_login_event(p)
 
-        # Checking whether credentials were wrong
-        failed_login_procedure(p)
-
-    except Exception as e:
-        NOTIFIER.send_message(f"Error in {login_pressreader.__name__} ; {e}")
-        NOTIFIER.screenshot_client.take_screenshot(p, "error")
-        NOTIFIER.screenshot_client.remove_screenshot()
-        chromium.clean(debug_trace=True)
-        sys.exit(f"Element not found! {login_pressreader.__name__} ; {e}")
+    failed_login_procedure(p)
 
 
 def handle_publication_button(p: Page):
