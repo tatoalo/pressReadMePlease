@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.0.9] - 2025-03-06
+
+- 🚧 Introduced `handle_errors` decorator to manage common error reporting and cleanup tasks
+- 👨‍🔧 Fixed broken `.btn-hotspot` reference which was leading to useless screenshot + trace reporting
+- ⏫ Upgraded to Playwright `v1.50.0`
+- 🧹 Updated some other dependencies
+
 ## [v3.0.8] - 2024-04-14
 
 - ⏫ Upgraded to Playwright `v1.43.0`
