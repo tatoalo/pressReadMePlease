@@ -46,7 +46,7 @@ def perform_login(page: Page, mlol_auth: Tuple[str, str]):
 def failed_login_procedure(page: Page):
     try:
         warning_failed_login = page.text_content(".page-title").lower()
-        if "avviso" in warning_failed_login:
+        if WARNING_FAILED_LOGIN_TEXT_ELEMENT in warning_failed_login:
             chromium.clean(debug_trace=True)
             NOTIFIER.send_message("Wrong MLOL credentials!")
             sys.exit("Login failed, please check your MLOL credentials!")
