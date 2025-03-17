@@ -25,8 +25,8 @@ def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
 
     login_pressreader(page, pressreader_auth)
 
-    select_pub_button = page.locator(".btn-action")
-    select_pub_button.click()
+    # select_pub_button = page.locator(".btn-action")
+    # select_pub_button.click()
 
     flow_executed_correctly, error_msg = verify_execution_flow(page)
 
