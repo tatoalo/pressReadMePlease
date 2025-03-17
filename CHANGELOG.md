@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.0.10] - 2025-03-17
+
+- 🐍 Introduced support for Python `3.12`
+- 👨‍🔧 Fixed broken reference
+
 ## [v3.0.9] - 2025-03-06
 
 - 🚧 Introduced `handle_errors` decorator to manage common error reporting and cleanup tasks
@@ -102,6 +107,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.0.10]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.10
 [v3.0.9]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.9
 [v3.0.8]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.8
 [v3.0.7]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.7
