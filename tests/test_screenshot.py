@@ -1,10 +1,8 @@
 from pathlib import Path
-from unittest import mock, TestCase
+from unittest import TestCase, mock
 
 from src.chromium import Chromium
-
 from src.screenshot import Screenshot, ScreenshotNotTaken
-
 
 TEST_PATH = Path(__file__).parent
 

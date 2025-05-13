@@ -5,8 +5,8 @@ from typing import Tuple
 from playwright.sync_api import Page, Response, TimeoutError
 
 from chromium import Chromium
-from src import NOTIFIER, CORRECT_FLOW_DAYS_RESET, logging
 from error_handling import handle_errors
+from src import CORRECT_FLOW_DAYS_RESET, NOTIFIER, logging
 
 chromium = None
 
@@ -24,9 +24,6 @@ def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
     sign_in_button.click()
 
     login_pressreader(page, pressreader_auth)
-
-    # select_pub_button = page.locator(".btn-action")
-    # select_pub_button.click()
 
     flow_executed_correctly, error_msg = verify_execution_flow(page)
 

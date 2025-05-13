@@ -8,7 +8,7 @@ from playwright.sync_api import Page, Response, sync_playwright
 # Native in 3.11 (https://peps.python.org/pep-0673/)
 from typing_extensions import Self
 
-# from notify import Notifier
+from notify import Notifier
 from src import PROJECT_ROOT, logging
 
 
@@ -20,7 +20,7 @@ class Chromium(object):
         headless: bool = True,
         trace: bool = False,
         timeout: int = 0,
-        notifier: Type["Notifier"] = None,  # noqa: F821
+        notifier: Type[Notifier] = None,
     ):
         self.trace = trace
         self.playwright = sync_playwright().start()
@@ -40,7 +40,7 @@ class Chromium(object):
         headless: bool = True,
         trace: bool = False,
         timeout: int = 0,
-        notifier: Type["Notifier"] = None,  # noqa: F821
+        notifier: Type[Notifier] = None,
     ) -> Self:
         if Chromium._instance:
             cls.__check_only_one_instance_alive()
@@ -98,6 +98,7 @@ class Chromium(object):
             return False, response.status
         return True, response.status
 
+    @staticmethod
     def __check_only_one_instance_alive():
         if len(Chromium._instance) != 1:
             logging.error("Weird behaviour, too many alive references...exiting...")

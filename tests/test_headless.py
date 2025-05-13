@@ -24,7 +24,6 @@ TEST_PATH = Path(__file__).parent
 class TestHeadless(TestCase):
     @mock.patch("src.notify.Notifier")
     def setUp(self, notifier_mock) -> None:
-
         if VIRTUAL_DISPLAY:
             self.d = Display()
             self.d.start()
