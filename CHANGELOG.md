@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.0.11] - 2025-05-13
+
+- 🔄 Migrated from `Poetry` to `uv` for dependency management
+- 🔁 Updated dependency installation flow to use `pyproject.toml` directly
+- 🏗 Migrated CI/CD test pipeline
+
 ## [v3.0.10] - 2025-03-17
 
 - 🐍 Introduced support for Python `3.12`
@@ -107,6 +113,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.0.11]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.11
 [v3.0.10]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.10
 [v3.0.9]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.9
 [v3.0.8]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.8

@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
+from typing import Type
 
 from playwright.sync_api import Page
 
-from typing import Type
 from src import logging
 
 

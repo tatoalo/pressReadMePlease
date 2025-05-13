@@ -1,7 +1,8 @@
 from pathlib import Path
-from screenshot import Screenshot
 
 import requests
+
+from screenshot import Screenshot
 
 
 class Notifier:

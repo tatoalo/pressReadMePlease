@@ -4,8 +4,8 @@ from typing import Tuple
 from playwright.sync_api import Page, TimeoutError
 
 from chromium import Chromium
-from src import NOTIFIER, WARNING_FAILED_LOGIN_TEXT_ELEMENT, logging
 from error_handling import handle_errors
+from src import NOTIFIER, WARNING_FAILED_LOGIN_TEXT_ELEMENT, logging
 
 chromium = None
 

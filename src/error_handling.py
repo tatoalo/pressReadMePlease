@@ -1,7 +1,8 @@
 import functools
 import sys
-from src import NOTIFIER, logging
+
 from chromium import Chromium
+from src import NOTIFIER, logging
 
 
 def handle_errors(func):
