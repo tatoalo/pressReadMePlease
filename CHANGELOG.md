@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.0.12] - 2025-05-20
+
+- 👨‍🔧 Fixed circular dependency issue via dependency injection
+- ⏫ Upgraded to Playwright `v1.52.0`
+- 🧹 Updated some other dependencies
+
 ## [v3.0.11] - 2025-05-13
 
 - 🔄 Migrated from `Poetry` to `uv` for dependency management
@@ -113,6 +119,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.0.12]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.12
 [v3.0.11]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.11
 [v3.0.10]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.10
 [v3.0.9]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.9
