@@ -1,8 +1,6 @@
 from pathlib import Path
-
 import requests
-
-from screenshot import Screenshot
+import logging
 
 
 class Notifier:
@@ -11,7 +9,6 @@ class Notifier:
         url: str = None,
         token: str = None,
         chat_id: str = None,
-        project_root: Path = None,
     ):
         if url is not None and token is not None and chat_id is not None:
             self.api_url = url + token
@@ -20,7 +17,10 @@ class Notifier:
             self.api_url = ""
             self.disabled = True
         self.chat_id = chat_id
-        self.screenshot_client = Screenshot(self, path=project_root)
+        self.screenshot_client = None
+
+    def set_screenshot_client(self, client):
+        self.screenshot_client = client
 
     def send_message(self, message: str):
         if self.disabled is False:
@@ -28,10 +28,15 @@ class Notifier:
             requests.post(self.api_url + "sendMessage", data=payload)
 
     def send_image(self, image_location: Path):
-        if self.disabled is False:
+        if self.disabled is False and self.screenshot_client:
             payload = {"chat_id": self.chat_id}
             files = [("photo", open(image_location, "rb"))]
             requests.post(self.api_url + "sendPhoto", data=payload, files=files)
+        elif not self.screenshot_client and not self.disabled:
+            logging.warning(
+                "Notifier.send_image called but screenshot_client is not set."
+            )
+            pass
 
     def send_binary(self, binary_path: Path):
         if self.disabled is False:
