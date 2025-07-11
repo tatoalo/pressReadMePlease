@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.0.13] - 2025-07-11
+
+- 🔄 Migrated to `freeAccessTime` data-bind selector
+- ⏫ Upgraded to Playwright `v1.53.0`
+- 🧹 Updated other dependencies
+
 ## [v3.0.12] - 2025-05-20
 
 - 👨‍🔧 Fixed circular dependency issue via dependency injection
@@ -119,6 +125,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.0.13]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.13
 [v3.0.12]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.12
 [v3.0.11]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.11
 [v3.0.10]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.10
