@@ -73,19 +73,20 @@ def handle_publication_button(p: Page):
 
 def verify_execution_flow(p: Page) -> Tuple:
     try:
-        welcome_message = p.locator(".infomsg-optional")
+        free_access_time_element = p.locator("span[data-bind='text: freeAccessTime']")
+        free_access_time_text = free_access_time_element.inner_text()
     except TimeoutError:
-        welcome_message = None
+        return False, "Error: Could not find free access time element!"
 
-    if not welcome_message:
-        return False, "Error in welcome message filtering!"
+    if not free_access_time_text:
+        return False, "Error: Free access time element is empty!"
 
     days_validation_list = [
-        int(n) for n in welcome_message.inner_text().split("day")[0] if n.isdigit()
+        int(n) for n in free_access_time_text.split("day")[0] if n.isdigit()
     ]
 
     if len(days_validation_list) == 0:
-        return False, "Error in validation extraction!"
+        return False, "Error: Could not extract days from free access time!"
 
     days = int("".join(map(str, days_validation_list)))
 
