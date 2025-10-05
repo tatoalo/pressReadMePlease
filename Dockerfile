@@ -1,6 +1,5 @@
 FROM ubuntu:22.04
 
-ENV PYTHONPATH="/"
 ENV TZ=Europe/Paris
 
 ARG DEBIAN_FRONTEND=noninteractive

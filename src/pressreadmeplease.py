@@ -4,6 +4,7 @@ from chromium import Chromium
 from mlol import visit_MLOL
 from pressreader import visit_pressreader
 from src import CONFIGURATION, NOTIFIER, TIMEOUT, logging
+from utilities import should_execute_flow, update_last_execution_time
 
 
 def config_page(page: Page):
@@ -14,6 +15,10 @@ def config_page(page: Page):
 
 
 def main():
+    if not should_execute_flow():
+        logging.debug("*** Automation flow not executed ***")
+        return
+
     mlol_link = CONFIGURATION.mlol_website
     mlol_credentials = (
         CONFIGURATION.mlol_username,
@@ -24,17 +29,27 @@ def main():
         CONFIGURATION.pressreader_password,
     )
 
-    chromium = Chromium(headless=True, trace=True, timeout=TIMEOUT, notifier=NOTIFIER)
-    chromium.context.on("page", config_page)
-    chromium.context.new_page()
-    pressreader_tab = visit_MLOL(mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials)
+    try:
+        chromium = Chromium(
+            headless=True, trace=True, timeout=TIMEOUT, notifier=NOTIFIER
+        )
+        chromium.context.on("page", config_page)
+        chromium.context.new_page()
+        pressreader_tab = visit_MLOL(
+            mlol_entrypoint=mlol_link, mlol_auth=mlol_credentials
+        )
 
-    visit_pressreader(
-        page=pressreader_tab,
-        pressreader_auth=pressreader_credentials,
-    )
-    logging.debug("*** Automation flow has terminated correctly ***")
-    chromium.clean()
+        visit_pressreader(
+            page=pressreader_tab,
+            pressreader_auth=pressreader_credentials,
+        )
+        logging.debug("*** Automation flow has terminated correctly ***")
+        update_last_execution_time(successful=True)
+        chromium.clean()
+    except SystemExit as e:
+        logging.debug(f"*** Automation flow failed: {e} ***")
+        update_last_execution_time(successful=False)
+        raise
 
 
 if __name__ == "__main__":

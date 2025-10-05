@@ -16,13 +16,15 @@ logging.getLogger("asyncio").setLevel(logging.INFO)
 # ms
 TIMEOUT = 30000
 
-CORRECT_FLOW_DAYS_RESET = 6
+CORRECT_FLOW_DAYS_RESET = 2
 
 WARNING_FAILED_LOGIN_TEXT_ELEMENT = "avviso"
 
 PROJECT_ROOT = Path(__file__).parent
 
 CONFIGURATION_FILE = "config.toml"
+
+RUNNING_LOG_FILE = PROJECT_ROOT / "running_log.txt"
 
 CONFIGURATION = load_configuration(path=PROJECT_ROOT / CONFIGURATION_FILE)
 
