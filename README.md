@@ -18,7 +18,7 @@ Using MLOL and PressReader to read newspapers from all over the world is pretty 
 
 With pressReadMePlease you can automate this, **set it and forget it!**.
 
-By default the authentication token updating procedure will launch every Friday at 3.20am, of course you can edit this scheduling in the related crontab file.
+By default the authentication token updating procedure will launch every day at 3.20am, the business logic for actually running E2E controls whether to run or not. Currently, we need to run every 3 days.
 
 ## Quick Start w/ Docker
 
