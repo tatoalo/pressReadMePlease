@@ -1,5 +1,22 @@
 # Changelog
 
+## [v3.1.0] - 2025-10-05
+
+- 🎯 **Smart execution flow control**: Introduced intelligent execution tracking with `running_log.txt`
+  - Flow now runs every 2 days instead of weekly (configurable via `CORRECT_FLOW_DAYS_RESET`)
+  - Automatic retry on failed executions regardless of time interval
+  - Persistent execution state tracking (timestamp + success status)
+  - Daily cron job with business logic handling execution schedule
+- 🧪 **Enhanced test coverage**: Added comprehensive unit tests for execution flow logic
+  - Tests for `should_execute_flow()` covering all execution scenarios
+  - Tests for `_last_execution_time()` and `update_last_execution_time()`
+  - Tests for failure recovery and retry mechanisms
+- 🐍 Added support for Python `3.13`
+- ⏫ Upgraded to Playwright `v1.55.0`
+- 🧹 Updated dependencies (pydantic, pytest, requests, tomlkit, certifi, typing-extensions)
+- 🔧 Improved error handling and execution flow verification
+- 🗑️ Removed unused `PYTHONPATH` environment variable from Dockerfile
+
 ## [v3.0.13] - 2025-07-11
 
 - 🔄 Migrated to `freeAccessTime` data-bind selector
@@ -125,6 +142,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.0]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.0
 [v3.0.13]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.13
 [v3.0.12]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.12
 [v3.0.11]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.11
