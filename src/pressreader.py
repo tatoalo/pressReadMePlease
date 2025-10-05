@@ -1,6 +1,6 @@
 import sys
 from http import HTTPStatus
-from typing import Tuple
+from typing import Optional, Tuple
 
 from playwright.sync_api import Page, Response, TimeoutError
 
@@ -25,16 +25,18 @@ def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
 
     login_pressreader(page, pressreader_auth)
 
-    flow_executed_correctly, error_msg = verify_execution_flow(page)
+    flow_executed_correctly, days, error_msg = verify_execution_flow(page)
 
     if not flow_executed_correctly:
         NOTIFIER.send_message(
-            f"Flow was ***NOT** terminated correctly {visit_pressreader.__name__} ; {error_msg}"
+            f"Flow was ***NOT** terminated correctly {visit_pressreader.__name__} ; {error_msg} ; days: {days}"
         )
         NOTIFIER.screenshot_client.take_screenshot(page, "error")
         NOTIFIER.screenshot_client.remove_screenshot()
         chromium.clean(debug_trace=True)
-        sys.exit(f"Flow error {visit_pressreader.__name__} ; {error_msg}")
+        sys.exit(
+            f"Flow error {visit_pressreader.__name__} ; {error_msg} ; days: {days}"
+        )
 
     logout_pressreader(page)
 
@@ -71,26 +73,27 @@ def handle_publication_button(p: Page):
         pass
 
 
-def verify_execution_flow(p: Page) -> Tuple:
+def verify_execution_flow(p: Page) -> Tuple[bool, Optional[int], Optional[str]]:
+    days = None
     try:
         free_access_time_element = p.locator("span[data-bind='text: freeAccessTime']")
         free_access_time_text = free_access_time_element.inner_text()
     except TimeoutError:
-        return False, "Error: Could not find free access time element!"
+        return False, days, "Error: Could not find free access time element!"
 
     if not free_access_time_text:
-        return False, "Error: Free access time element is empty!"
+        return False, days, "Error: Free access time element is empty!"
 
     days_validation_list = [
         int(n) for n in free_access_time_text.split("day")[0] if n.isdigit()
     ]
 
     if len(days_validation_list) == 0:
-        return False, "Error: Could not extract days from free access time!"
+        return False, days, "Error: Could not extract days from free access time!"
 
     days = int("".join(map(str, days_validation_list)))
 
-    return days == CORRECT_FLOW_DAYS_RESET, None
+    return days == CORRECT_FLOW_DAYS_RESET, days, None
 
 
 def logout_pressreader(p: Page):

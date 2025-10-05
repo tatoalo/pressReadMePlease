@@ -1,8 +1,9 @@
 import os
 import sys
 from pathlib import Path
+from datetime import datetime
 
-from tomlkit import load
+from tomlkit import load, dump
 
 from configuration import Configuration
 from notify import Notifier
@@ -57,3 +58,64 @@ def load_notifier(*, configuration: Configuration, project_root: Path) -> Notifi
     notifier_instance.set_screenshot_client(screenshot_instance)
 
     return notifier_instance
+
+
+def should_execute_flow() -> bool:
+    from datetime import timedelta
+    from src import CORRECT_FLOW_DAYS_RESET
+
+    current_datetime = datetime.now()
+
+    last_execution_result = _last_execution_time()
+
+    if last_execution_result is None:
+        logging.debug("*** No previous execution time found ***")
+        return True
+
+    last_execution_datetime, successful = last_execution_result
+
+    logging.debug(
+        "*** last execution time: {}, successful: {} ***".format(
+            last_execution_datetime, successful
+        )
+    )
+
+    if not successful:
+        logging.debug("*** Last execution failed, running flow anyway ***")
+        return True
+
+    next_execution_time = last_execution_datetime + timedelta(
+        days=CORRECT_FLOW_DAYS_RESET
+    )
+    return current_datetime >= next_execution_time
+
+
+def _last_execution_time():
+    from src import RUNNING_LOG_FILE
+
+    path = Path(RUNNING_LOG_FILE)
+    if path.exists():
+        with path.open("r") as f:
+            data = load(f)
+            last_exec_str = data.get("last_execution_time", None)
+            successful = data.get("successful", True)
+            if last_exec_str:
+                return datetime.fromisoformat(last_exec_str), successful
+            return None
+    else:
+        with path.open("w") as f:
+            data = {}
+            dump(data, f)
+        return None
+
+
+def update_last_execution_time(successful: bool = True):
+    from src import RUNNING_LOG_FILE
+
+    path = Path(RUNNING_LOG_FILE)
+    with path.open("w") as f:
+        data = {
+            "last_execution_time": datetime.now().isoformat(),
+            "successful": successful,
+        }
+        dump(data, f)
