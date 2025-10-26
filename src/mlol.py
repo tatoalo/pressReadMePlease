@@ -1,10 +1,13 @@
+import os
 import sys
+from pathlib import Path
 
 from playwright.sync_api import Page, TimeoutError
 
 from chromium import Chromium
 from error_handling import handle_errors
-from src import NOTIFIER, WARNING_FAILED_LOGIN_TEXT_ELEMENT, logging
+from src import NOTIFIER, PROJECT_ROOT, WARNING_FAILED_LOGIN_TEXT_ELEMENT, logging
+from src import cache
 
 chromium = None
 
@@ -84,16 +87,29 @@ def verify_modal_presence(page: Page):
     try:
         page.wait_for_selector("#FavModal")
         logging.debug("Modal found on MLOL entry")
-        NOTIFIER.send_message("Modal found in MLOL")
-        NOTIFIER.screenshot_client.take_screenshot(page, "modal")
-        NOTIFIER.screenshot_client.remove_screenshot()
+
+        # Caching check
+        temp_screenshot_path = Path(PROJECT_ROOT) / "modal_temp.png"
+        page.screenshot(path=temp_screenshot_path)
+
+        # Check if we've seen this modal before
+        if cache.should_notify_modal(temp_screenshot_path):
+            logging.info("New modal detected - sending notification")
+            NOTIFIER.send_message("Modal found in MLOL")
+            NOTIFIER.send_image(image_location=temp_screenshot_path)
+        else:
+            logging.debug("Modal already seen - skipping notification")
+
+        # Clean up temporary screenshot
+        if temp_screenshot_path.exists():
+            os.remove(temp_screenshot_path)
 
         # Retrieving modal dismissal button
         modal_dismissal_button = page.locator(
             "//div[@class='modal-footer']/button[@data-dismiss='modal']"
         )
         modal_dismissal_button.click()
-        logging.debug("Modal dissmissed correctly!")
+        logging.debug("Modal dismissed correctly!")
 
     except TimeoutError:
         # No modal found
