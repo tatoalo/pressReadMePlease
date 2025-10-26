@@ -1,6 +1,6 @@
 import sys
 from http import HTTPStatus
-from typing import Optional, Tuple
+from typing import Optional
 
 from playwright.sync_api import Page, Response, TimeoutError
 
@@ -12,7 +12,7 @@ chromium = None
 
 
 @handle_errors
-def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
+def visit_pressreader(page: Page, pressreader_auth: tuple[str, str]) -> None:
     global chromium
     chromium = Chromium.get_chromium()
 
@@ -42,7 +42,7 @@ def visit_pressreader(page: Page, pressreader_auth: Tuple[str, str]) -> None:
 
 
 @handle_errors
-def login_pressreader(p: Page, pressreader_auth: Tuple[str, str]):
+def login_pressreader(p: Page, pressreader_auth: tuple[str, str]):
     logging.debug("Logging into Pressreader...")
     username, password = pressreader_auth
 
@@ -73,7 +73,7 @@ def handle_publication_button(p: Page):
         pass
 
 
-def verify_execution_flow(p: Page) -> Tuple[bool, Optional[int], Optional[str]]:
+def verify_execution_flow(p: Page) -> tuple[bool, Optional[int], Optional[str]]:
     days = None
     try:
         free_access_time_element = p.locator("span[data-bind='text: freeAccessTime']")

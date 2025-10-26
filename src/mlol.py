@@ -1,5 +1,4 @@
 import sys
-from typing import Tuple
 
 from playwright.sync_api import Page, TimeoutError
 
@@ -12,7 +11,7 @@ chromium = None
 
 def visit_MLOL(
     mlol_entrypoint: str = "",
-    mlol_auth: Tuple[str, str] = (),
+    mlol_auth: tuple[str, str] = (None, None),
 ) -> Page:
     global chromium
     chromium = Chromium.get_chromium()
@@ -31,7 +30,7 @@ def visit_MLOL(
 
 
 @handle_errors
-def perform_login(page: Page, mlol_auth: Tuple[str, str]):
+def perform_login(page: Page, mlol_auth: tuple[str, str]):
     logging.debug("Logging into MLOL...")
     username, password = mlol_auth
 
