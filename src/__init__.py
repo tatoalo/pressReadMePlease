@@ -26,6 +26,8 @@ CONFIGURATION_FILE = "config.toml"
 
 RUNNING_LOG_FILE = PROJECT_ROOT / "running_log.txt"
 
+CACHE_DIR = PROJECT_ROOT / ".cache/modals_seen"
+
 CONFIGURATION = load_configuration(path=PROJECT_ROOT / CONFIGURATION_FILE)
 
 NOTIFIER = load_notifier(configuration=CONFIGURATION, project_root=PROJECT_ROOT)

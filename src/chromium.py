@@ -1,7 +1,7 @@
 import os
 import sys
 import weakref
-from typing import Optional, Tuple, Type
+from typing import Optional, Type
 
 from playwright.sync_api import Page, Response, sync_playwright
 
@@ -92,7 +92,7 @@ class Chromium(object):
             os.remove(trace_path)
 
     @staticmethod
-    def __check_response_status(response: Response) -> Tuple[bool, int]:
+    def __check_response_status(response: Response) -> tuple[bool, int]:
         if response.status != 200:
             logging.debug(f"Found status {response.status} for {response.url}")
             return False, response.status
