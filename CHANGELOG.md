@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.1.1] - 2025-10-26
+
+- 🎯 **Modal Notification System**: Disk-caching to prevent duplicate modal notifications
+- 🐍 Replaced `Tuple` with `tuple` in type annotations across codebase
+- ⏫ Upgraded to `ubuntu` `24.04`
+
 ## [v3.1.0] - 2025-10-05
 
 - 🎯 **Smart execution flow control**: Introduced intelligent execution tracking with `running_log.txt`
@@ -142,6 +148,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.1]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.1
 [v3.1.0]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.0
 [v3.0.13]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.13
 [v3.0.12]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.12
