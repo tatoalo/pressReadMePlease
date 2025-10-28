@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.1.2] - 2025-10-28
+
+- 👨‍🔧 Fixed broken main cronjob
+- 🔧 Added E2E startup script
+- 🧹 Upgraded deps
+
 ## [v3.1.1] - 2025-10-26
 
 - 🎯 **Modal Notification System**: Disk-caching to prevent duplicate modal notifications
@@ -148,6 +154,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.2]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.2
 [v3.1.1]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.1
 [v3.1.0]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.0
 [v3.0.13]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.0.13
