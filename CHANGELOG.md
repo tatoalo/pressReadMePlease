@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.1.4] - 2025-12-05
+
+- 👨‍🔧 Fixed broken login btn strict mode violation
+-  🧹 Upgraded deps
+- ⏫ Upgraded all workflow actions
 
 ## [v3.1.3] - 2025-10-29
 
@@ -159,6 +164,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.4]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.4
 [v3.1.3]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.3
 [v3.1.2]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.2
 [v3.1.1]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.1
