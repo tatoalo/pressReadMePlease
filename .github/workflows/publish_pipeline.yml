@@ -35,14 +35,32 @@ jobs:
               echo "should_publish=false" >> $GITHUB_OUTPUT
             fi
           else
-            # Triggered by push to main - check if commit has a version tag
+            # Triggered by push to main - check if a new version tag was introduced by this merge
+            # First check if tag points directly at this commit
             VERSION_TAG=$(git tag --points-at ${{ github.sha }} | grep -E '^v[0-9]' | head -n1)
+
+            if [[ -z "$VERSION_TAG" ]]; then
+              # No direct tag, check if merge introduced a new version tag
+              # Get latest version tag reachable from HEAD
+              LATEST_TAG=$(git describe --tags --match "v[0-9]*" --abbrev=0 HEAD 2>/dev/null || echo "")
+
+              if [[ -n "$LATEST_TAG" ]]; then
+                # Check if this tag was already reachable from previous main (first parent)
+                PREV_TAG=$(git describe --tags --match "v[0-9]*" --abbrev=0 HEAD^1 2>/dev/null || echo "")
+
+                if [[ "$LATEST_TAG" != "$PREV_TAG" ]]; then
+                  VERSION_TAG="$LATEST_TAG"
+                  echo "Found new version tag $VERSION_TAG introduced by this merge"
+                fi
+              fi
+            fi
+
             if [[ -n "$VERSION_TAG" ]]; then
-              echo "Found version tag $VERSION_TAG on this commit"
+              echo "Publishing with version tag $VERSION_TAG"
               echo "should_publish=true" >> $GITHUB_OUTPUT
               echo "version_tag=$VERSION_TAG" >> $GITHUB_OUTPUT
             else
-              echo "No version tag on this commit, skipping publish"
+              echo "No new version tag in this commit, skipping publish"
               echo "should_publish=false" >> $GITHUB_OUTPUT
             fi
           fi
