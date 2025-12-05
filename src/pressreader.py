@@ -20,7 +20,7 @@ def visit_pressreader(page: Page, pressreader_auth: tuple[str, str]) -> None:
 
     handle_publication_button(page)
 
-    sign_in_button = page.locator(".btn-login")
+    sign_in_button = page.get_by_role("button", name="Sign in")
     sign_in_button.click()
 
     login_pressreader(page, pressreader_auth)
