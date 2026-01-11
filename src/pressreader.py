@@ -18,6 +18,7 @@ def visit_pressreader(page: Page, pressreader_auth: tuple[str, str]) -> None:
 
     logging.debug("Visiting Pressreader...")
 
+    handle_cookie_consent(page)
     handle_publication_button(page)
 
     sign_in_button = page.get_by_role("button", name="Sign in")
@@ -69,6 +70,15 @@ def handle_publication_button(p: Page):
         )
         publication_button.click()
 
+    except TimeoutError:
+        pass
+
+
+def handle_cookie_consent(p: Page):
+    try:
+        deny_button = p.get_by_role("button", name="Deny")
+        deny_button.click(timeout=5000)
+        logging.debug("Cookie consent dismissed")
     except TimeoutError:
         pass
 
