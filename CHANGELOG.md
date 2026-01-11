@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.1.6] - 2026-01-11
+
+- 🔥 Added optional Logfire support for cloud logging (via `logfire_token` in config.toml)
+- 🍪 Fixed cookie consent dialog blocking page interactions
+- 🧹 Upgraded deps (playwright, pytest, certifi, pillow)
+
 ## [v3.1.5] - 2025-12-06
 
 - 🚨 `urllib3` high CVSS fix
@@ -168,6 +174,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.6]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.6
 [v3.1.5]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.5
 [v3.1.4]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.4
 [v3.1.3]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.3
