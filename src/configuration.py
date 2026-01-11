@@ -16,6 +16,8 @@ class Configuration(BaseModel):
     telegram_token: Optional[str] = None
     telegram_chat_id: Optional[int] = None
 
+    logfire_token: Optional[str] = None
+
     @field_validator("mlol_website")
     @classmethod
     def mlol_website_must_have_mlol_subdomain(cls, website) -> Optional[str]:

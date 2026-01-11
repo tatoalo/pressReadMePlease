@@ -30,4 +30,10 @@ CACHE_DIR = PROJECT_ROOT / ".cache/modals_seen"
 
 CONFIGURATION = load_configuration(path=PROJECT_ROOT / CONFIGURATION_FILE)
 
+if CONFIGURATION and CONFIGURATION.logfire_token:
+    import logfire
+
+    logfire.configure(token=CONFIGURATION.logfire_token)
+    logfire.instrument_logging()
+
 NOTIFIER = load_notifier(configuration=CONFIGURATION, project_root=PROJECT_ROOT)
