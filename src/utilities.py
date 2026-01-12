@@ -37,6 +37,8 @@ def load_configuration(*, path: Path = "config.toml") -> Configuration:
         telegram_base_url=notification_service.get("telegram_base_url"),
         telegram_token=notification_service.get("telegram_token"),
         telegram_chat_id=notification_service.get("telegram_chat_id"),
+        logfire_token=notification_service.get("logfire_token"),
+        environment=notification_service.get("environment"),
     )
 
     return c

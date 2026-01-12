@@ -33,7 +33,11 @@ CONFIGURATION = load_configuration(path=PROJECT_ROOT / CONFIGURATION_FILE)
 if CONFIGURATION and CONFIGURATION.logfire_token:
     import logfire
 
-    logfire.configure(token=CONFIGURATION.logfire_token)
-    logfire.instrument_logging()
+    logfire.configure(
+        token=CONFIGURATION.logfire_token,
+        environment=CONFIGURATION.environment if CONFIGURATION.environment else None,
+    )
+    logging.getLogger().addHandler(logfire.LogfireLoggingHandler())
+
 
 NOTIFIER = load_notifier(configuration=CONFIGURATION, project_root=PROJECT_ROOT)
