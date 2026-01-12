@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.1.7] - 2026-01-12
+
+- 🔧 Fixed logfire configuration not being loaded from `config.toml`
+- 🪵 Added standard library logging integration with Logfire via `LogfireLoggingHandler`
+
 ## [v3.1.6] - 2026-01-11
 
 - 🔥 Added optional Logfire support for cloud logging (via `logfire_token` in config.toml)
@@ -174,6 +179,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.7]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.7
 [v3.1.6]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.6
 [v3.1.5]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.5
 [v3.1.4]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.4
