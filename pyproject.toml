@@ -18,7 +18,7 @@ dependencies = [
     "typing-extensions==4.15.0",
     "urllib3==2.6.3",
     "certifi==2026.1.4",
-    "pillow==12.1.0",
+    "pillow==12.1.1",
     "imagehash==4.3.2",
     "logfire>=4.17.0",
 ]
