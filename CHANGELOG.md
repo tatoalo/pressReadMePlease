@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.1.8] - 2026-02-12
+
+- 🔧 Fixed false-negative flow verification when landing on detail page
+- ⏫ Upgraded to Playwright `v1.58.0`
+- 🧹 Upgraded deps
+
 ## [v3.1.7] - 2026-01-12
 
 - 🔧 Fixed logfire configuration not being loaded from `config.toml`
@@ -179,6 +185,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.8]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.8
 [v3.1.7]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.7
 [v3.1.6]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.6
 [v3.1.5]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.5
