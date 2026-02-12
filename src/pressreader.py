@@ -89,6 +89,11 @@ def verify_execution_flow(p: Page) -> tuple[bool, Optional[int], Optional[str]]:
         free_access_time_element = p.locator("span[data-bind='text: freeAccessTime']")
         free_access_time_text = free_access_time_element.inner_text()
     except TimeoutError:
+        logging.debug(
+            "freeAccessTime element not found, checking for sponsored access..."
+        )
+        if _is_sponsored_access_granted(p):
+            return True, CORRECT_FLOW_DAYS_RESET, None
         return False, days, "Error: Could not find free access time element!"
 
     if not free_access_time_text:
@@ -104,6 +109,16 @@ def verify_execution_flow(p: Page) -> tuple[bool, Optional[int], Optional[str]]:
     days = int("".join(map(str, days_validation_list)))
 
     return days == CORRECT_FLOW_DAYS_RESET, days, None
+
+
+def _is_sponsored_access_granted(p: Page) -> bool:
+    try:
+        sponsored_element = p.get_by_text("brought to you by", exact=False)
+        sponsored_element.wait_for(state="visible", timeout=5000)
+        logging.debug("Sponsored access detected — flow considered successful")
+        return True
+    except TimeoutError:
+        return False
 
 
 def logout_pressreader(p: Page):

@@ -4,6 +4,8 @@ from datetime import datetime
 from pathlib import Path
 
 from src.chromium import Chromium
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+
 from src.pressreader import subscribe_to_login_event, verify_execution_flow
 from src.utilities import (
     should_execute_flow,
@@ -98,6 +100,47 @@ class TestPressreader(TestCase):
         self.chromium.visit_site(page=self.page, url=mocked_resource_url)
 
         assert verify_execution_flow(self.page)[0] is False
+
+    @mock.patch("src.pressreader.NOTIFIER")
+    @mock.patch("src.pressreader.chromium")
+    @mock.patch("src.pressreader.Page.get_by_text")
+    @mock.patch("src.pressreader.Page.locator")
+    def test_sponsored_access_fallback_succeeds(
+        self, page_locator_mock, page_get_by_text_mock, clean_mock, global_notifier_mock
+    ):
+        global_notifier_mock.disabled = False
+        clean_mock.clean.return_value = "mocking clean call"
+        page_locator_mock.return_value.inner_text.side_effect = PlaywrightTimeoutError(
+            "Timeout 30000ms exceeded."
+        )
+        page_get_by_text_mock.return_value.wait_for.return_value = None
+
+        result = verify_execution_flow(self.page)
+
+        assert result[0] is True
+        assert result[1] == 2
+
+    @mock.patch("src.pressreader.NOTIFIER")
+    @mock.patch("src.pressreader.chromium")
+    @mock.patch("src.pressreader.Page.get_by_text")
+    @mock.patch("src.pressreader.Page.locator")
+    def test_no_free_access_and_no_sponsored_access_fails(
+        self, page_locator_mock, page_get_by_text_mock, clean_mock, global_notifier_mock
+    ):
+        global_notifier_mock.disabled = False
+        clean_mock.clean.return_value = "mocking clean call"
+        page_locator_mock.return_value.inner_text.side_effect = PlaywrightTimeoutError(
+            "Timeout 30000ms exceeded."
+        )
+        page_get_by_text_mock.return_value.wait_for.side_effect = (
+            PlaywrightTimeoutError("Timeout 5000ms exceeded.")
+        )
+
+        result = verify_execution_flow(self.page)
+
+        assert result[0] is False
+        assert result[1] is None
+        assert "Could not find free access time element" in result[2]
 
 
 class TestUtilities(TestCase):
