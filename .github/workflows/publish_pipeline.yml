@@ -76,7 +76,7 @@ jobs:
 
       - name: Retrieve Docker Meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         env:
           VERSION_TAG: ${{ needs.check-publish.outputs.version_tag }}
         with:
