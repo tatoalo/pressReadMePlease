@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.1.10] - 2026-03-20
+
+- 🔧 Fixed flow false negatives when `freeAccessTime` is not available but user session is authenticated
+- 👨‍🔧 Fixed flaky PressReader logout interactions caused by detached DOM elements
+
 ## [v3.1.9] - 2026-03-15
 
 - ⏫ Upgraded all Docker workflow actions (metadata-action v6, build-push-action v7, setup-buildx-action v4, login-action v4)
@@ -190,6 +195,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.10]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.10
 [v3.1.9]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.9
 [v3.1.8]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.8
 [v3.1.7]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.7
