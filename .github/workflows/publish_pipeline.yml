@@ -32,27 +32,16 @@ jobs:
           PY
           )
 
-          PREVIOUS_VERSION=$(python - <<'PY'
-          import subprocess
-          import tomllib
+          VERSION_TAG="v$CURRENT_VERSION"
+          git fetch --tags --force
 
-          previous_pyproject = subprocess.check_output(
-              ["git", "show", "HEAD^1:pyproject.toml"],
-              text=True,
-          )
-          data = tomllib.loads(previous_pyproject)
-          print(data["project"]["version"])
-          PY
-          )
-
-          if [[ "$CURRENT_VERSION" == "$PREVIOUS_VERSION" ]]; then
-            echo "Version unchanged ($CURRENT_VERSION), skipping publish"
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION_TAG" >/dev/null 2>&1; then
+            echo "Tag $VERSION_TAG already exists, skipping publish"
             echo "should_publish=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          VERSION_TAG="v$CURRENT_VERSION"
-          echo "Version bump detected: $PREVIOUS_VERSION -> $CURRENT_VERSION"
+          echo "Tag $VERSION_TAG does not exist, publishing release"
           echo "should_publish=true" >> $GITHUB_OUTPUT
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "version_tag=$VERSION_TAG" >> $GITHUB_OUTPUT
@@ -72,7 +61,7 @@ jobs:
         env:
           VERSION_TAG: ${{ needs.detect-version-bump.outputs.version_tag }}
         run: |
-          if git rev-parse "$VERSION_TAG" >/dev/null 2>&1; then
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION_TAG" >/dev/null 2>&1; then
             echo "Tag $VERSION_TAG already exists"
             exit 1
           fi
