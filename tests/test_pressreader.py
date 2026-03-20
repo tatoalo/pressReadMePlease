@@ -6,7 +6,11 @@ from pathlib import Path
 from src.chromium import Chromium
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
-from src.pressreader import subscribe_to_login_event, verify_execution_flow
+from src.pressreader import (
+    logout_pressreader,
+    subscribe_to_login_event,
+    verify_execution_flow,
+)
 from src.utilities import (
     should_execute_flow,
     _last_execution_time,
@@ -135,12 +139,56 @@ class TestPressreader(TestCase):
         page_get_by_text_mock.return_value.wait_for.side_effect = (
             PlaywrightTimeoutError("Timeout 5000ms exceeded.")
         )
+        page_locator_mock.return_value.first.wait_for.side_effect = (
+            PlaywrightTimeoutError("Timeout 5000ms exceeded.")
+        )
 
         result = verify_execution_flow(self.page)
 
         assert result[0] is False
         assert result[1] is None
         assert "Could not find free access time element" in result[2]
+
+    @mock.patch("src.pressreader.NOTIFIER")
+    @mock.patch("src.pressreader.chromium")
+    @mock.patch("src.pressreader.Page.get_by_text")
+    @mock.patch("src.pressreader.Page.locator")
+    def test_authenticated_session_fallback_succeeds(
+        self, page_locator_mock, page_get_by_text_mock, clean_mock, global_notifier_mock
+    ):
+        global_notifier_mock.disabled = False
+        clean_mock.clean.return_value = "mocking clean call"
+        page_locator_mock.return_value.inner_text.side_effect = PlaywrightTimeoutError(
+            "Timeout 30000ms exceeded."
+        )
+        page_get_by_text_mock.return_value.wait_for.side_effect = (
+            PlaywrightTimeoutError("Timeout 5000ms exceeded.")
+        )
+        page_locator_mock.return_value.first.wait_for.return_value = None
+
+        result = verify_execution_flow(self.page)
+
+        assert result[0] is True
+        assert result[1] == 2
+
+    @mock.patch("src.pressreader.Page.wait_for_selector")
+    @mock.patch("src.pressreader.Page.locator")
+    def test_logout_uses_locator_clicks(
+        self, page_locator_mock, page_wait_for_selector_mock
+    ):
+        first_locator = mock.Mock()
+        first_locator.click.return_value = None
+        second_locator = mock.Mock()
+        second_locator.click.return_value = None
+        page_locator_mock.side_effect = [
+            mock.Mock(first=first_locator),
+            mock.Mock(first=second_locator),
+        ]
+
+        logout_pressreader(self.page)
+
+        page_wait_for_selector_mock.assert_not_called()
+        assert page_locator_mock.call_count == 2
 
 
 class TestUtilities(TestCase):
