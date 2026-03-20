@@ -94,6 +94,8 @@ def verify_execution_flow(p: Page) -> tuple[bool, Optional[int], Optional[str]]:
         )
         if _is_sponsored_access_granted(p):
             return True, CORRECT_FLOW_DAYS_RESET, None
+        if _is_authenticated_session(p):
+            return True, CORRECT_FLOW_DAYS_RESET, None
         return False, days, "Error: Could not find free access time element!"
 
     if not free_access_time_text:
@@ -121,12 +123,21 @@ def _is_sponsored_access_granted(p: Page) -> bool:
         return False
 
 
+def _is_authenticated_session(p: Page) -> bool:
+    try:
+        user_avatar = p.locator(".userphoto-title").first
+        user_avatar.wait_for(state="visible", timeout=5000)
+        return True
+    except TimeoutError:
+        return False
+
+
 def logout_pressreader(p: Page):
     try:
-        profile_dialog_menu = p.wait_for_selector(".userphoto-title")
+        profile_dialog_menu = p.locator(".userphoto-title").first
         profile_dialog_menu.click()
 
-        logout_item = p.wait_for_selector(".pri-logout")
+        logout_item = p.locator(".pri-logout").first
         logout_item.click()
     except TimeoutError:
         pass
