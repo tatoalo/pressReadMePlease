@@ -32,11 +32,15 @@ jobs:
           PY
           )
 
-          PREVIOUS_VERSION=$(git show HEAD^1:pyproject.toml | python - <<'PY'
-          import sys
+          PREVIOUS_VERSION=$(python - <<'PY'
+          import subprocess
           import tomllib
 
-          data = tomllib.loads(sys.stdin.read())
+          previous_pyproject = subprocess.check_output(
+              ["git", "show", "HEAD^1:pyproject.toml"],
+              text=True,
+          )
+          data = tomllib.loads(previous_pyproject)
           print(data["project"]["version"])
           PY
           )
