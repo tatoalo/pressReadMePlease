@@ -37,10 +37,12 @@ def perform_login(page: Page, mlol_auth: tuple[str, str]):
     logging.debug("Logging into MLOL...")
     username, password = mlol_auth
 
-    page.fill("input[name='lusername']", username, timeout=0)
-    page.fill("input[name='lpassword']", password, timeout=0)
+    page.get_by_role("button", name="Accedi", exact=True).click()
 
-    page.click("input[type='submit']", timeout=0)
+    page.get_by_role("textbox", name="Ente Username").fill(username, timeout=0)
+    page.get_by_role("textbox", name="Password").fill(password, timeout=0)
+
+    page.get_by_role("button", name="Login").click()
 
     failed_login_procedure(page)
 
@@ -59,17 +61,17 @@ def failed_login_procedure(page: Page):
 @handle_errors
 def navigate_to_newspapers(page: Page) -> Page:
     # Clicking on catalogue
-    typologies_menu_entry = page.query_selector("#caricatip")
+    typologies_menu_entry = page.get_by_role("button", name="Esplora")
     typologies_menu_entry.click()
 
-    newspapers_section = page.locator(":nth-match(:text('EDICOLA'), 1)")
+    newspapers_section = page.locator("#typology").get_by_role("link", name="Edicola ")
     newspapers_section.click()
 
     # Focusing on Corriere della Sera, safe bet for a pressreader presence
-    corriere_sera = page.locator("text=Corriere della Sera")
-    corriere_sera.nth(0).click()
+    corriere_sera = page.get_by_role("link", name="Corriere della Sera").first
+    corriere_sera.click()
 
-    pressreader_submit_button = page.locator(":nth-match(:text('SFOGLIA'), 1)")
+    pressreader_submit_button = page.get_by_role("link", name="Sfoglia online")
 
     with chromium.context.expect_page() as pressreader_blank_target:
         pressreader_submit_button.click()
