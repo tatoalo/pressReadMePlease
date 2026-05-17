@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.1.11] - 2026-05-17
+
+- 🔧 Fixed MLOL automation after the May 2026 redesign changed clean-page login, Edicola navigation, PressReader launch, and logout selectors
+- 🧯 Removed infinite Playwright waits from MLOL, PressReader, and Chromium defaults
+- 🧹 Upgraded dependencies and refreshed the uv lockfile
+
 ## [v3.1.10] - 2026-03-20
 
 - 🔧 Fixed flow false negatives when `freeAccessTime` is not available but user session is authenticated

@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from urllib.parse import urljoin, urlparse
 
 from playwright.sync_api import Page, TimeoutError
 
@@ -10,6 +11,9 @@ from src import NOTIFIER, PROJECT_ROOT, WARNING_FAILED_LOGIN_TEXT_ELEMENT, loggi
 from src import cache
 
 chromium = None
+
+MLOL_LOGIN_PATH = "/login/login"
+MLOL_LOGIN_FORM_SELECTOR = "#Username"
 
 
 def visit_MLOL(
@@ -37,17 +41,45 @@ def perform_login(page: Page, mlol_auth: tuple[str, str]):
     logging.debug("Logging into MLOL...")
     username, password = mlol_auth
 
-    page.fill("input[name='lusername']", username, timeout=0)
-    page.fill("input[name='lpassword']", password, timeout=0)
+    open_login_form(page)
 
-    page.click("input[type='submit']", timeout=0)
+    page.fill(MLOL_LOGIN_FORM_SELECTOR, username)
+    page.fill("#Password", password)
+
+    page.press("#Password", "Enter")
+    page.wait_for_load_state("domcontentloaded")
 
     failed_login_procedure(page)
 
 
+def open_login_form(page: Page) -> None:
+    if login_form_is_available(page):
+        return
+
+    try:
+        page.get_by_role("button", name="Accedi").first.click(timeout=5000)
+        page.wait_for_selector(MLOL_LOGIN_FORM_SELECTOR, timeout=5000)
+        return
+    except TimeoutError:
+        logging.debug("MLOL clean-page Accedi button unavailable, trying login URL")
+
+    parsed_url = urlparse(page.url)
+    mlol_base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+    page.goto(urljoin(mlol_base_url, MLOL_LOGIN_PATH))
+    page.wait_for_load_state("domcontentloaded")
+
+
+def login_form_is_available(page: Page) -> bool:
+    try:
+        page.wait_for_selector(MLOL_LOGIN_FORM_SELECTOR, timeout=1000)
+        return True
+    except TimeoutError:
+        return False
+
+
 def failed_login_procedure(page: Page):
     try:
-        warning_failed_login = page.text_content(".page-title").lower()
+        warning_failed_login = page.text_content(".page-title", timeout=5000).lower()
         if WARNING_FAILED_LOGIN_TEXT_ELEMENT in warning_failed_login:
             chromium.clean(debug_trace=True)
             NOTIFIER.send_message("Wrong MLOL credentials!")
@@ -58,21 +90,28 @@ def failed_login_procedure(page: Page):
 
 @handle_errors
 def navigate_to_newspapers(page: Page) -> Page:
-    # Clicking on catalogue
-    typologies_menu_entry = page.query_selector("#caricatip")
-    typologies_menu_entry.click()
+    parsed_url = urlparse(page.url)
+    mlol_base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
 
-    newspapers_section = page.locator(":nth-match(:text('EDICOLA'), 1)")
-    newspapers_section.click()
+    page.goto(urljoin(mlol_base_url, "/search?idtype=600"))
+    page.wait_for_load_state("networkidle")
 
-    # Focusing on Corriere della Sera, safe bet for a pressreader presence
-    corriere_sera = page.locator("text=Corriere della Sera")
-    corriere_sera.nth(0).click()
+    corriere_href = page.eval_on_selector_all(
+        "a[href*='/media/details/']",
+        "els=>{for(const e of els){"
+        "if((e.innerText||'').trim().toLowerCase()==='corriere della sera')"
+        "return e.getAttribute('href');}return null;}",
+    )
+    if not corriere_href:
+        raise Exception("Corriere della Sera not found in Edicola listing")
 
-    pressreader_submit_button = page.locator(":nth-match(:text('SFOGLIA'), 1)")
+    page.goto(urljoin(mlol_base_url, corriere_href))
+    page.wait_for_load_state("networkidle")
+
+    sfoglia_button = page.get_by_role("link", name="Sfoglia online").first
 
     with chromium.context.expect_page() as pressreader_blank_target:
-        pressreader_submit_button.click()
+        sfoglia_button.click()
     page_pressreader = pressreader_blank_target.value
     page_pressreader.wait_for_load_state("domcontentloaded")
 
@@ -85,7 +124,7 @@ def navigate_to_newspapers(page: Page) -> Page:
 
 def verify_modal_presence(page: Page):
     try:
-        page.wait_for_selector("#FavModal")
+        page.wait_for_selector("#FavModal", timeout=3000)
         logging.debug("Modal found on MLOL entry")
 
         # Caching check
@@ -118,7 +157,7 @@ def verify_modal_presence(page: Page):
 
 def logout_mlol(page: Page):
     try:
-        logout_item = page.wait_for_selector(".btn-logout")
+        logout_item = page.wait_for_selector("a[href*='logout']", timeout=5000)
         logout_item.click()
     except TimeoutError:
         pass
