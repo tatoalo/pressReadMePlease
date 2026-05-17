@@ -4,7 +4,6 @@ from unittest import TestCase, mock
 import time
 
 from PIL import Image
-from diskcache import Cache
 
 from src import cache
 
@@ -18,9 +17,9 @@ class TestCache(TestCase):
     def setUp(self) -> None:
         """Set up test fixtures before each test method."""
         # Use a temporary cache directory for testing
-        self.temp_cache_dir = tempfile.mkdtemp()
+        self.temp_cache_dir = tempfile.TemporaryDirectory()
         self.original_cache = cache.ModalCache
-        cache.ModalCache = Cache(self.temp_cache_dir)
+        cache.ModalCache = cache.HashCache(Path(self.temp_cache_dir.name))
 
         # Create test images
         self.test_image_path = TEST_PATH / "test_modal_1.png"
@@ -58,6 +57,7 @@ class TestCache(TestCase):
         """Clean up test fixtures after each test method."""
         # Restore original cache
         cache.ModalCache = self.original_cache
+        self.temp_cache_dir.cleanup()
 
         # Remove test images
         if self.test_image_path.exists():

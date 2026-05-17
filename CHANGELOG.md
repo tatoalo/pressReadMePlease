@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.1.12] - 2026-05-17
+
+- 🚨 Fixed Dependabot security alerts
+
 ## [v3.1.11] - 2026-05-17
 
 - 🔧 Fixed MLOL automation after the May 2026 redesign changed clean-page login, Edicola navigation, PressReader launch, and logout selectors
