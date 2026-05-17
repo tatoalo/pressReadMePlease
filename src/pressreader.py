@@ -47,8 +47,8 @@ def login_pressreader(p: Page, pressreader_auth: tuple[str, str]):
     logging.debug("Logging into Pressreader...")
     username, password = pressreader_auth
 
-    p.fill("input[type='email']", username, timeout=0)
-    p.fill("input[type='password']", password, timeout=0)
+    p.fill("input[type='email']", username)
+    p.fill("input[type='password']", password)
 
     stay_signed_in_checkbox = p.wait_for_selector(".checkbox")
     if stay_signed_in_checkbox.is_checked():

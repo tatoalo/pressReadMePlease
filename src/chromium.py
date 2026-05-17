@@ -19,7 +19,7 @@ class Chromium(object):
         self,
         headless: bool = True,
         trace: bool = False,
-        timeout: int = 0,
+        timeout: int = 60000,
         notifier: Type[Notifier] = None,
     ):
         self.trace = trace
@@ -39,7 +39,7 @@ class Chromium(object):
         cls,
         headless: bool = True,
         trace: bool = False,
-        timeout: int = 0,
+        timeout: int = 60000,
         notifier: Type[Notifier] = None,
     ) -> Self:
         if Chromium._instance:
