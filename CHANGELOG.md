@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.1.13] - 2026-06-12
+
+- 🧹 Upgraded deps
+
 ## [v3.1.12] - 2026-05-17
 
 - 🚨 Fixed Dependabot security alerts
