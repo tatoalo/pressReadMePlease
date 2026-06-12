@@ -209,6 +209,9 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.13]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.13
+[v3.1.12]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.12
+[v3.1.11]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.11
 [v3.1.10]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.10
 [v3.1.9]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.9
 [v3.1.8]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.8
