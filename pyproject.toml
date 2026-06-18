@@ -16,7 +16,7 @@ dependencies = [
     "tomlkit==0.14.0",
     "typing-extensions==4.15.0",
     "urllib3==2.7.0",
-    "certifi==2026.5.20",
+    "certifi==2026.6.17",
     "pillow==12.2.0",
     "imagehash==4.3.2",
     "logfire==4.36.0",
