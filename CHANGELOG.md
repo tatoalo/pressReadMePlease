@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.1.14] - 2026-06-20
+
+- 🔧 Dismiss new MLOL onboarding modal
+- 🧹 Upgraded deps
+
 ## [v3.1.13] - 2026-06-12
 
 - 🧹 Upgraded deps
@@ -209,6 +214,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.1.14]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.14
 [v3.1.13]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.13
 [v3.1.12]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.12
 [v3.1.11]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.11
