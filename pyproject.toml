@@ -1,6 +1,6 @@
 [project]
 name = "pressreadmeplease"
-version = "3.1.13"
+version = "3.1.14"
 description = "A process for automating PressReader weekly token automagically."
 authors = [{ name = "tatoalo", email = "apogliaghi@gmail.com" }]
 license = "MIT"
@@ -10,20 +10,20 @@ dependencies = [
     "mock==5.2.0",
     "playwright==1.60.0",
     "pydantic==2.12.5",
-    "pytest==9.0.3",
+    "pytest==9.1.0",
     "pyvirtualdisplay==3.0.0",
     "requests==2.34.2",
     "tomlkit==0.14.0",
     "typing-extensions==4.15.0",
     "urllib3==2.7.0",
-    "certifi==2026.5.20",
+    "certifi==2026.6.17",
     "pillow==12.2.0",
     "imagehash==4.3.2",
-    "logfire==4.36.0",
+    "logfire==4.37.0",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff==0.15.16",
+    "ruff==0.15.17",
     "pre-commit==4.6.0",
 ]

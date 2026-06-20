@@ -7,8 +7,13 @@ from playwright.sync_api import Page, TimeoutError
 
 from chromium import Chromium
 from error_handling import handle_errors
-from src import NOTIFIER, PROJECT_ROOT, WARNING_FAILED_LOGIN_TEXT_ELEMENT, logging
-from src import cache
+from src import (
+    NOTIFIER,
+    PROJECT_ROOT,
+    WARNING_FAILED_LOGIN_TEXT_ELEMENT,
+    cache,
+    logging,
+)
 
 chromium = None
 
@@ -108,6 +113,8 @@ def navigate_to_newspapers(page: Page) -> Page:
     page.goto(urljoin(mlol_base_url, corriere_href))
     page.wait_for_load_state("networkidle")
 
+    dismiss_onboarding_modal(page)
+
     sfoglia_button = page.get_by_role("link", name="Sfoglia online").first
 
     with chromium.context.expect_page() as pressreader_blank_target:
@@ -120,6 +127,43 @@ def navigate_to_newspapers(page: Page) -> Page:
     )
 
     return page_pressreader
+
+
+def dismiss_onboarding_modal(page: Page):
+    container = "#modal-onboardingontainer"
+    try:
+        page.wait_for_selector(f"{container} .modal-body", timeout=3000)
+    except TimeoutError:
+        return
+
+    logging.debug("Onboarding modal detected - dismissing")
+
+    close_selectors = (
+        f"{container} [data-dismiss='modal']",
+        f"{container} [data-bs-dismiss='modal']",
+        f"{container} .btn-close",
+        f"{container} button.close",
+    )
+    for selector in close_selectors:
+        try:
+            page.locator(selector).first.click(timeout=2000)
+            logging.debug(f"Onboarding modal dismissed via {selector}")
+            break
+        except TimeoutError:
+            continue
+
+    page.evaluate(
+        "(sel)=>{"
+        "const c=document.querySelector(sel);"
+        "if(c){c.innerHTML='';c.remove();}"
+        "document.querySelectorAll('.modal-backdrop').forEach(b=>b.remove());"
+        "document.body.classList.remove('modal-open');"
+        "document.body.style.removeProperty('overflow');"
+        "document.body.style.removeProperty('padding-right');"
+        "}",
+        container,
+    )
+    logging.debug("Onboarding modal cleared")
 
 
 def verify_modal_presence(page: Page):
