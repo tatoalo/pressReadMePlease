@@ -10,7 +10,7 @@ dependencies = [
     "mock==5.2.0",
     "playwright==1.60.0",
     "pydantic==2.12.5",
-    "pytest==9.1.0",
+    "pytest==9.1.1",
     "pyvirtualdisplay==3.0.0",
     "requests==2.34.2",
     "tomlkit==0.14.0",
