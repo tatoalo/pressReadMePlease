@@ -5,7 +5,7 @@
 - 🧹 Upgraded dependencies and refreshed the uv lockfile
 - ⏫ Upgraded GitHub Actions and pre-commit hooks
 - 🐍 Added CI coverage for Python `3.14`
-- 🐳 Kept the Docker base image on Ubuntu `24.04`
+- 📖 Updated the README Python support range
 
 ## [v3.1.14] - 2026-06-20
 
