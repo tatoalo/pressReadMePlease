@@ -8,22 +8,22 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "mock==5.2.0",
-    "playwright==1.60.0",
-    "pydantic==2.12.5",
-    "pytest==9.1.0",
+    "playwright==1.61.0",
+    "pydantic==2.13.4",
+    "pytest==9.1.1",
     "pyvirtualdisplay==3.0.0",
     "requests==2.34.2",
-    "tomlkit==0.14.0",
-    "typing-extensions==4.15.0",
+    "tomlkit==0.15.0",
+    "typing-extensions==4.16.0",
     "urllib3==2.7.0",
     "certifi==2026.6.17",
-    "pillow==12.2.0",
+    "pillow==12.3.0",
     "imagehash==4.3.2",
     "logfire==4.37.0",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff==0.15.17",
+    "ruff==0.15.20",
     "pre-commit==4.6.0",
 ]
