@@ -4,7 +4,7 @@
 # pressReadMePlease
 
 🦄 Automagically🪄 refresh PressReader weekly token.
-(`3.10` <= 🐍 >=`3.13`)
+(`3.10` <= 🐍 <= `3.14`)
 <br/>
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
 
