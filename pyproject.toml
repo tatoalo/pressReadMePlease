@@ -19,7 +19,7 @@ dependencies = [
     "certifi==2026.6.17",
     "pillow==12.3.0",
     "imagehash==4.3.2",
-    "logfire==4.37.0",
+    "logfire==4.41.0",
 ]
 
 [dependency-groups]
