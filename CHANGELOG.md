@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.2.1] - 2026-10-01
+
+- 🚨 Fixed Dependabot security alerts: `urllib3` to `v2.8.0` and `virtualenv` to `v21.14.2`
+
 ## [v3.2.0] - 2026-10-01
 
 - ⏫ Upgraded to Logfire `v5` and Playwright `v1.63.0`
@@ -229,6 +233,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.2.1]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.2.1
 [v3.2.0]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.2.0
 [v3.1.15]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.15
 [v3.1.14]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.14
