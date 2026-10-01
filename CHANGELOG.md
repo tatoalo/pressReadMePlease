@@ -6,6 +6,7 @@
 - 🧹 Upgraded deps (pydantic, tomlkit, certifi, ruff, pre-commit) and refreshed the uv lockfile
 - 👷 Upgraded `actions/setup-python` to `v7` and `astral-sh/setup-uv` to `v10`
 - 🔧 Pinned CI lint to the project's ruff version and kept the pre-`0.16` lint rule set
+- 🐍 Dropped Python `3.10` support ahead of its end of life, minimum is now `3.11`
 
 ## [v3.1.15] - 2026-07-05
 
