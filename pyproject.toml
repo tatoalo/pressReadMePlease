@@ -1,29 +1,32 @@
 [project]
 name = "pressreadmeplease"
-version = "3.1.15"
+version = "3.2.0"
 description = "A process for automating PressReader weekly token automagically."
 authors = [{ name = "tatoalo", email = "apogliaghi@gmail.com" }]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "mock==5.2.0",
-    "playwright==1.61.0",
-    "pydantic==2.13.4",
+    "playwright==1.63.0",
+    "pydantic==2.13.5",
     "pytest==9.1.1",
     "pyvirtualdisplay==3.0.0",
     "requests==2.34.2",
-    "tomlkit==0.15.0",
+    "tomlkit==0.15.1",
     "typing-extensions==4.16.0",
     "urllib3==2.7.0",
-    "certifi==2026.6.17",
+    "certifi==2026.7.22",
     "pillow==12.3.0",
     "imagehash==4.3.2",
-    "logfire==4.37.0",
+    "logfire==5.1.1",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff==0.15.20",
-    "pre-commit==4.6.0",
+    "ruff==0.16.9",
+    "pre-commit==4.6.2",
 ]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

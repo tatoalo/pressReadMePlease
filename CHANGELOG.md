@@ -1,5 +1,13 @@
 # Changelog
 
+## [v3.2.0] - 2026-10-01
+
+- ⏫ Upgraded to Logfire `v5` and Playwright `v1.63.0`
+- 🧹 Upgraded deps (pydantic, tomlkit, certifi, ruff, pre-commit) and refreshed the uv lockfile
+- 👷 Upgraded `actions/setup-python` to `v7` and `astral-sh/setup-uv` to `v10`
+- 🔧 Pinned CI lint to the project's ruff version and kept the pre-`0.16` lint rule set
+- 🐍 Dropped Python `3.10` support ahead of its end of life, minimum is now `3.11`
+
 ## [v3.1.15] - 2026-07-05
 
 - 🧹 Upgraded dependencies and refreshed the uv lockfile
@@ -221,6 +229,7 @@
 
 - Released last supported Selenium-based docker image
 
+[v3.2.0]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.2.0
 [v3.1.15]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.15
 [v3.1.14]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.14
 [v3.1.13]: https://github.com/tatoalo/pressReadMePlease/releases/tag/v3.1.13
