@@ -113,7 +113,7 @@ def navigate_to_newspapers(page: Page) -> Page:
     page.goto(urljoin(mlol_base_url, corriere_href))
     page.wait_for_load_state("networkidle")
 
-    dismiss_onboarding_modal(page)
+    dismiss_htmx_modals(page)
 
     sfoglia_button = page.get_by_role("link", name="Sfoglia online").first
 
@@ -129,14 +129,24 @@ def navigate_to_newspapers(page: Page) -> Page:
     return page_pressreader
 
 
-def dismiss_onboarding_modal(page: Page):
-    container = "#modal-onboardingontainer"
+HTMX_MODAL_CONTAINERS = (
+    ("onboarding", "#modal-onboardingontainer"),
+    ("communication", "#modal-communicationcontainer"),
+)
+
+
+def dismiss_htmx_modals(page: Page):
+    for name, container in HTMX_MODAL_CONTAINERS:
+        dismiss_htmx_modal(page, name, container)
+
+
+def dismiss_htmx_modal(page: Page, name: str, container: str):
     try:
         page.wait_for_selector(f"{container} .modal-body", timeout=3000)
     except TimeoutError:
         return
 
-    logging.debug("Onboarding modal detected - dismissing")
+    logging.debug(f"{name.capitalize()} modal detected - dismissing")
 
     close_selectors = (
         f"{container} [data-dismiss='modal']",
@@ -147,7 +157,7 @@ def dismiss_onboarding_modal(page: Page):
     for selector in close_selectors:
         try:
             page.locator(selector).first.click(timeout=2000)
-            logging.debug(f"Onboarding modal dismissed via {selector}")
+            logging.debug(f"{name.capitalize()} modal dismissed via {selector}")
             break
         except TimeoutError:
             continue
@@ -163,7 +173,7 @@ def dismiss_onboarding_modal(page: Page):
         "}",
         container,
     )
-    logging.debug("Onboarding modal cleared")
+    logging.debug(f"{name.capitalize()} modal cleared")
 
 
 def verify_modal_presence(page: Page):

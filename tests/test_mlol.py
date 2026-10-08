@@ -127,6 +127,32 @@ class TestMLOLRedesign(TestCase):
         sfoglia_button.click.assert_called_once()
         pressreader_page.wait_for_load_state.assert_called_once_with("domcontentloaded")
 
+    def test_dismiss_htmx_modals_clears_communication_modal(self):
+        page = mock.Mock()
+        communication_body = "#modal-communicationcontainer .modal-body"
+
+        def wait_for_selector(selector, timeout):
+            if selector == communication_body:
+                return mock.Mock()
+            raise PlaywrightTimeoutError("Timeout 3000ms exceeded.")
+
+        page.wait_for_selector.side_effect = wait_for_selector
+
+        mlol.dismiss_htmx_modals(page)
+
+        page.wait_for_selector.assert_has_calls(
+            [
+                mock.call("#modal-onboardingontainer .modal-body", timeout=3000),
+                mock.call(communication_body, timeout=3000),
+            ]
+        )
+        page.locator.assert_called_once_with(
+            "#modal-communicationcontainer [data-dismiss='modal']"
+        )
+        page.locator.return_value.first.click.assert_called_once_with(timeout=2000)
+        page.evaluate.assert_called_once()
+        assert page.evaluate.call_args.args[1] == "#modal-communicationcontainer"
+
     def test_verify_modal_presence_uses_bounded_wait(self):
         page = mock.Mock()
         page.wait_for_selector.side_effect = PlaywrightTimeoutError(
