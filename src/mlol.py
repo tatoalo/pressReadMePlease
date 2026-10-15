@@ -19,6 +19,13 @@ chromium = None
 
 MLOL_LOGIN_PATH = "/login/login"
 MLOL_LOGIN_FORM_SELECTOR = "#Username"
+MLOL_LISTING_SELECTOR = "a[href*='/media/details/']"
+
+ALTCHA_GATE_SELECTOR = "#altcha-gate"
+ALTCHA_NOCOOKIE_SELECTOR = "#altcha-nocookie:not([hidden])"
+ALTCHA_TIMEOUT = 60000
+
+MLOL_NETWORK_IDLE_TIMEOUT = 15000
 
 
 def visit_MLOL(
@@ -98,20 +105,22 @@ def navigate_to_newspapers(page: Page) -> Page:
     parsed_url = urlparse(page.url)
     mlol_base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
 
-    page.goto(urljoin(mlol_base_url, "/search?idtype=600"))
-    page.wait_for_load_state("networkidle")
+    goto_mlol(page, urljoin(mlol_base_url, "/search?idtype=600"))
 
     corriere_href = page.eval_on_selector_all(
-        "a[href*='/media/details/']",
+        MLOL_LISTING_SELECTOR,
         "els=>{for(const e of els){"
         "if((e.innerText||'').trim().toLowerCase()==='corriere della sera')"
         "return e.getAttribute('href');}return null;}",
     )
     if not corriere_href:
-        raise Exception("Corriere della Sera not found in Edicola listing")
+        listing_count = page.locator(MLOL_LISTING_SELECTOR).count()
+        raise Exception(
+            "Corriere della Sera not found in Edicola listing "
+            f"({listing_count} titles on page '{page.title()}')"
+        )
 
-    page.goto(urljoin(mlol_base_url, corriere_href))
-    page.wait_for_load_state("networkidle")
+    goto_mlol(page, urljoin(mlol_base_url, corriere_href))
 
     dismiss_htmx_modals(page)
 
@@ -127,6 +136,41 @@ def navigate_to_newspapers(page: Page) -> Page:
     )
 
     return page_pressreader
+
+
+def goto_mlol(page: Page, url: str) -> None:
+    page.goto(url)
+    pass_altcha_gate(page)
+    wait_for_network_idle(page)
+
+
+def wait_for_network_idle(page: Page) -> None:
+    try:
+        page.wait_for_load_state("networkidle", timeout=MLOL_NETWORK_IDLE_TIMEOUT)
+    except TimeoutError:
+        logging.debug(
+            f"MLOL network not idle after {MLOL_NETWORK_IDLE_TIMEOUT // 1000}s, "
+            "continuing"
+        )
+
+
+def pass_altcha_gate(page: Page) -> None:
+    if page.locator(ALTCHA_GATE_SELECTOR).count() == 0:
+        return
+
+    logging.debug("ALTCHA gate detected - waiting for verification")
+    if page.locator(ALTCHA_NOCOOKIE_SELECTOR).count() > 0:
+        raise Exception("ALTCHA gate requires cookies, verification cannot start")
+
+    try:
+        page.wait_for_selector(
+            ALTCHA_GATE_SELECTOR, state="detached", timeout=ALTCHA_TIMEOUT
+        )
+    except TimeoutError:
+        raise Exception(f"ALTCHA gate did not clear within {ALTCHA_TIMEOUT // 1000}s")
+
+    page.wait_for_load_state("domcontentloaded")
+    logging.debug("ALTCHA gate cleared")
 
 
 HTMX_MODAL_CONTAINERS = (

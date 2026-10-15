@@ -95,6 +95,7 @@ class TestMLOLRedesign(TestCase):
         page = mock.Mock()
         page.url = "https://milano.medialibrary.it/login/login"
         page.eval_on_selector_all.return_value = "/media/details/550276273"
+        page.locator.return_value.count.return_value = 0
 
         sfoglia_button = mock.Mock()
         page.get_by_role.return_value.first = sfoglia_button
@@ -121,7 +122,10 @@ class TestMLOLRedesign(TestCase):
             ]
         )
         page.wait_for_load_state.assert_has_calls(
-            [mock.call("networkidle"), mock.call("networkidle")]
+            [
+                mock.call("networkidle", timeout=15000),
+                mock.call("networkidle", timeout=15000),
+            ]
         )
         page.get_by_role.assert_called_once_with("link", name="Sfoglia online")
         sfoglia_button.click.assert_called_once()
@@ -174,6 +178,93 @@ class TestMLOLRedesign(TestCase):
             "a[href*='logout']", timeout=5000
         )
         logout_item.click.assert_called_once()
+
+
+def locator_with_counts(counts):
+    def locator(selector):
+        return mock.Mock(**{"count.return_value": counts.get(selector, 0)})
+
+    return locator
+
+
+class TestAltchaGate(TestCase):
+    def test_pass_altcha_gate_skips_pages_without_gate(self):
+        page = mock.Mock()
+        page.locator.side_effect = locator_with_counts({})
+
+        mlol.pass_altcha_gate(page)
+
+        page.locator.assert_called_once_with("#altcha-gate")
+        page.wait_for_selector.assert_not_called()
+
+    def test_pass_altcha_gate_waits_for_gate_to_detach(self):
+        page = mock.Mock()
+        page.locator.side_effect = locator_with_counts({"#altcha-gate": 1})
+
+        mlol.pass_altcha_gate(page)
+
+        page.wait_for_selector.assert_called_once_with(
+            "#altcha-gate", state="detached", timeout=60000
+        )
+        page.wait_for_load_state.assert_called_once_with("domcontentloaded")
+
+    def test_pass_altcha_gate_raises_when_gate_does_not_clear(self):
+        page = mock.Mock()
+        page.locator.side_effect = locator_with_counts({"#altcha-gate": 1})
+        page.wait_for_selector.side_effect = PlaywrightTimeoutError(
+            "Timeout 60000ms exceeded."
+        )
+
+        with self.assertRaisesRegex(Exception, "ALTCHA gate did not clear"):
+            mlol.pass_altcha_gate(page)
+
+    def test_pass_altcha_gate_raises_when_cookies_are_disabled(self):
+        page = mock.Mock()
+        page.locator.side_effect = locator_with_counts(
+            {"#altcha-gate": 1, "#altcha-nocookie:not([hidden])": 1}
+        )
+
+        with self.assertRaisesRegex(Exception, "requires cookies"):
+            mlol.pass_altcha_gate(page)
+
+        page.wait_for_selector.assert_not_called()
+
+    def test_goto_mlol_passes_gate_before_waiting_for_network(self):
+        page = mock.Mock()
+        page.locator.side_effect = locator_with_counts({"#altcha-gate": 1})
+
+        mlol.goto_mlol(page, "https://milano.medialibrary.it/search?idtype=600")
+
+        page.goto.assert_called_once_with(
+            "https://milano.medialibrary.it/search?idtype=600"
+        )
+        assert page.method_calls.index(
+            mock.call.wait_for_selector("#altcha-gate", state="detached", timeout=60000)
+        ) < page.method_calls.index(
+            mock.call.wait_for_load_state("networkidle", timeout=15000)
+        )
+
+    def test_wait_for_network_idle_is_best_effort(self):
+        page = mock.Mock()
+        page.wait_for_load_state.side_effect = PlaywrightTimeoutError(
+            "Timeout 15000ms exceeded."
+        )
+
+        mlol.wait_for_network_idle(page)
+
+        page.wait_for_load_state.assert_called_once_with("networkidle", timeout=15000)
+
+    def test_missing_corriere_error_reports_listing_state(self):
+        page = mock.Mock()
+        page.url = "https://milano.medialibrary.it/"
+        page.eval_on_selector_all.return_value = None
+        page.locator.side_effect = locator_with_counts({})
+        page.title.return_value = "Verifica di sicurezza"
+
+        with self.assertRaisesRegex(
+            Exception, r"\(0 titles on page 'Verifica di sicurezza'\)"
+        ):
+            mlol.navigate_to_newspapers.__wrapped__(page)
 
 
 class TestTimeoutSafety(TestCase):
