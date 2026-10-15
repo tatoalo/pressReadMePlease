@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.2.3] - 2026-10-15
+
+- 🔧 Wait for the new MLOL ALTCHA gate on the Edicola search
+- 🔧 Made MLOL `networkidle` waits best-effort (15s)
+
 ## [v3.2.2] - 2026-10-08
 
 - 🔧 Dismiss the new MLOL "Comunicazione agli utenti" modal that blocked the "Sfoglia online" click
