@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.3.0] - 2026-10-16
+
+- 🔄 Cleaner renewal buffer
+- 🔧 Schedule renewals by calendar date so execution-time drift cannot skip a renewal
+- 🔧 Separate the renewal cadence from the expected two-day countdown after renewal
+- 🧹 Updated deps
+
 ## [v3.2.3] - 2026-10-15
 
 - 🔧 Wait for the new MLOL ALTCHA gate on the Edicola search
