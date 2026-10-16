@@ -6,7 +6,7 @@ from playwright.sync_api import Page, Response, TimeoutError
 
 from chromium import Chromium
 from error_handling import handle_errors
-from src import CORRECT_FLOW_DAYS_RESET, NOTIFIER, logging
+from src import EXPECTED_FREE_ACCESS_DAYS, NOTIFIER, logging
 
 chromium = None
 
@@ -93,13 +93,15 @@ def verify_execution_flow(p: Page) -> tuple[bool, Optional[int], Optional[str]]:
             "freeAccessTime element not found, checking for sponsored access..."
         )
         if _is_sponsored_access_granted(p):
-            return True, CORRECT_FLOW_DAYS_RESET, None
+            return True, EXPECTED_FREE_ACCESS_DAYS, None
         if _is_authenticated_session(p):
-            return True, CORRECT_FLOW_DAYS_RESET, None
+            return True, EXPECTED_FREE_ACCESS_DAYS, None
         return False, days, "Error: Could not find free access time element!"
 
     if not free_access_time_text:
         return False, days, "Error: Free access time element is empty!"
+
+    logging.info("PressReader access countdown: %s", free_access_time_text)
 
     days_validation_list = [
         int(n) for n in free_access_time_text.split("day")[0] if n.isdigit()
@@ -110,7 +112,7 @@ def verify_execution_flow(p: Page) -> tuple[bool, Optional[int], Optional[str]]:
 
     days = int("".join(map(str, days_validation_list)))
 
-    return days == CORRECT_FLOW_DAYS_RESET, days, None
+    return days == EXPECTED_FREE_ACCESS_DAYS, days, None
 
 
 def _is_sponsored_access_granted(p: Page) -> bool:

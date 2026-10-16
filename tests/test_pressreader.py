@@ -78,14 +78,14 @@ class TestPressreader(TestCase):
         global_notifier_mock.disabled = False
         clean_mock.clean.return_value = "mocking clean call"
         page_html_mock.return_value.inner_text.return_value = (
-            "Complimentary access: 2 days"
+            "Reconnect when access expires — 2 days 23 hours left"
         )
 
         mocked_resource_url = "https://www.example.com/catalog"
 
         self.chromium.visit_site(page=self.page, url=mocked_resource_url)
 
-        assert verify_execution_flow(self.page)[0] is True
+        assert verify_execution_flow(self.page) == (True, 2, None)
 
     @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
@@ -96,7 +96,7 @@ class TestPressreader(TestCase):
         global_notifier_mock.disabled = False
         clean_mock.clean.return_value = "mocking clean call"
         page_html_mock.return_value.inner_text.return_value = (
-            "Complimentary access: 4 days"
+            "Reconnect when access expires — 1 day 23 hours left"
         )
 
         mocked_resource_url = "https://www.example.com/catalog"
@@ -270,7 +270,7 @@ class TestUtilities(TestCase):
 
     @mock.patch("src.utilities._last_execution_time")
     @mock.patch("src.utilities.datetime")
-    @mock.patch("src.CORRECT_FLOW_DAYS_RESET", 2)
+    @mock.patch("src.ACCESS_RENEW_EVERY_DAYS", 2)
     def test_should_execute_flow_returns_true_when_no_last_execution(
         self, datetime_mock, last_execution_mock
     ):
@@ -284,7 +284,7 @@ class TestUtilities(TestCase):
 
     @mock.patch("src.utilities._last_execution_time")
     @mock.patch("src.utilities.datetime")
-    @mock.patch("src.CORRECT_FLOW_DAYS_RESET", 2)
+    @mock.patch("src.ACCESS_RENEW_EVERY_DAYS", 2)
     def test_should_execute_flow_returns_true_when_enough_days_passed(
         self, datetime_mock, last_execution_mock
     ):
@@ -299,7 +299,7 @@ class TestUtilities(TestCase):
 
     @mock.patch("src.utilities._last_execution_time")
     @mock.patch("src.utilities.datetime")
-    @mock.patch("src.CORRECT_FLOW_DAYS_RESET", 2)
+    @mock.patch("src.ACCESS_RENEW_EVERY_DAYS", 2)
     def test_should_execute_flow_returns_false_when_not_enough_days_passed(
         self, datetime_mock, last_execution_mock
     ):
@@ -314,12 +314,12 @@ class TestUtilities(TestCase):
 
     @mock.patch("src.utilities._last_execution_time")
     @mock.patch("src.utilities.datetime")
-    @mock.patch("src.CORRECT_FLOW_DAYS_RESET", 2)
-    def test_should_execute_flow_returns_true_when_exactly_enough_days_passed(
+    @mock.patch("src.ACCESS_RENEW_EVERY_DAYS", 2)
+    def test_should_execute_flow_returns_true_when_exactly_enough_calendar_days_passed(
         self, datetime_mock, last_execution_mock
     ):
         last_datetime = datetime(2025, 1, 1, 10, 0, 0)
-        current_datetime = datetime(2025, 1, 3, 10, 0, 0)
+        current_datetime = datetime(2025, 1, 3, 9, 59, 0)
         datetime_mock.now.return_value = current_datetime
         last_execution_mock.return_value = (last_datetime, True)
 
@@ -329,7 +329,7 @@ class TestUtilities(TestCase):
 
     @mock.patch("src.utilities._last_execution_time")
     @mock.patch("src.utilities.datetime")
-    @mock.patch("src.CORRECT_FLOW_DAYS_RESET", 2)
+    @mock.patch("src.ACCESS_RENEW_EVERY_DAYS", 2)
     def test_should_execute_flow_returns_true_when_last_execution_failed(
         self, datetime_mock, last_execution_mock
     ):
@@ -341,6 +341,36 @@ class TestUtilities(TestCase):
         result = should_execute_flow()
 
         assert result is True
+
+    @mock.patch("src.utilities._last_execution_time")
+    @mock.patch("src.utilities.datetime")
+    def test_should_execute_flow_runs_after_two_days_despite_time_drift(
+        self, datetime_mock, last_execution_mock
+    ):
+        datetime_mock.now.return_value = datetime(2026, 10, 16, 3, 20, 2)
+        last_execution_mock.return_value = (datetime(2026, 10, 14, 3, 21), True)
+
+        assert should_execute_flow() is True
+
+    @mock.patch("src.utilities._last_execution_time")
+    @mock.patch("src.utilities.datetime")
+    def test_should_execute_flow_skips_after_yesterday_success(
+        self, datetime_mock, last_execution_mock
+    ):
+        datetime_mock.now.return_value = datetime(2026, 10, 16, 3, 20, 2)
+        last_execution_mock.return_value = (datetime(2026, 10, 15, 3, 21), True)
+
+        assert should_execute_flow() is False
+
+    @mock.patch("src.utilities._last_execution_time")
+    @mock.patch("src.utilities.datetime")
+    def test_should_execute_flow_skips_after_success_earlier_today(
+        self, datetime_mock, last_execution_mock
+    ):
+        datetime_mock.now.return_value = datetime(2026, 10, 16, 9, 35)
+        last_execution_mock.return_value = (datetime(2026, 10, 16, 3, 21), True)
+
+        assert should_execute_flow() is False
 
     @mock.patch("src.utilities.datetime")
     @mock.patch("src.utilities.dump")

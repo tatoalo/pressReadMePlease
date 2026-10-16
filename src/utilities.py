@@ -64,7 +64,7 @@ def load_notifier(*, configuration: Configuration, project_root: Path) -> Notifi
 
 def should_execute_flow() -> bool:
     from datetime import timedelta
-    from src import CORRECT_FLOW_DAYS_RESET
+    from src import ACCESS_RENEW_EVERY_DAYS
 
     current_datetime = datetime.now()
 
@@ -87,9 +87,9 @@ def should_execute_flow() -> bool:
         return True
 
     next_execution_time = last_execution_datetime + timedelta(
-        days=CORRECT_FLOW_DAYS_RESET
+        days=ACCESS_RENEW_EVERY_DAYS
     )
-    return current_datetime >= next_execution_time
+    return current_datetime.date() >= next_execution_time.date()
 
 
 def _last_execution_time():
