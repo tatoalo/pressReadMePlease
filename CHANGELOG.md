@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.3.1] - 2026-10-24
+
+- Maintenance updates
+
 ## [v3.3.0] - 2026-10-16
 
 - 🔄 Cleaner renewal buffer
