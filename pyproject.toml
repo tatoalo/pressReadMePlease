@@ -9,7 +9,7 @@ requires-python = ">=3.11"
 dependencies = [
     "mock==5.2.0",
     "playwright==1.64.1",
-    "pydantic==2.14.1",
+    "pydantic==2.14.3",
     "pytest==9.1.1",
     "pyvirtualdisplay==3.0.0",
     "requests==2.34.2",
