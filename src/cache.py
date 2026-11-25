@@ -7,9 +7,6 @@ import json
 from pathlib import Path
 from time import time
 
-import imagehash
-from PIL import Image
-
 from src import CACHE_DIR, logging
 
 
@@ -20,8 +17,7 @@ class HashCache:
     def __init__(self, cache_dir: Path):
         self.cache_file = Path(cache_dir) / "modal_hashes.json"
 
-    def set(self, key: str, value: int, expire: int) -> None:
-        del value
+    def set(self, key: str, expire: int) -> None:
         records = self._load()
         records[key] = time() + expire
         self._write(records)
@@ -43,7 +39,7 @@ class HashCache:
         try:
             raw_records = json.loads(self.cache_file.read_text())
         except (json.JSONDecodeError, OSError) as e:
-            logging.error(f"Failed to read modal hash cache: {e}")
+            logging.error(f"Failed to read modal cache: {e}")
             return {}
         return {
             str(key): float(value)
@@ -59,45 +55,31 @@ class HashCache:
 ModalCache = HashCache(CACHE_DIR)
 
 
-def remember(h: str, ttl_seconds: int = CACHE_TTL_SECONDS) -> None:
+def remember(key: str, ttl_seconds: int = CACHE_TTL_SECONDS) -> None:
     try:
-        ModalCache.set(h, 1, expire=ttl_seconds)
-        logging.debug(f"Remembered hash {h[:8]}... with TTL {ttl_seconds}s")
+        ModalCache.set(key, expire=ttl_seconds)
+        logging.debug(f"Remembered modal {key} with TTL {ttl_seconds}s")
     except Exception as e:
-        logging.error(f"Failed to cache hash {h[:8]}...: {e}")
+        logging.error(f"Failed to cache modal {key}: {e}")
 
 
-def seen_before(h: str) -> bool:
-    return h in ModalCache
+def seen_before(key: str) -> bool:
+    return key in ModalCache
 
 
-def check_and_remember(h: str, ttl_seconds: int = CACHE_TTL_SECONDS) -> bool:
-    if seen_before(h):
-        logging.debug(f"Modal hash {h[:8]}... already seen (hit)")
+def check_and_remember(key: str, ttl_seconds: int = CACHE_TTL_SECONDS) -> bool:
+    if seen_before(key):
+        logging.debug(f"Modal {key} already seen (hit)")
         return True
 
-    logging.debug(f"Modal hash {h[:8]}... is NEW (miss)")
-    remember(h, ttl_seconds)
+    logging.debug(f"Modal {key} is NEW (miss)")
+    remember(key, ttl_seconds)
     return False
 
 
-def perceptual_hash(screenshot_path: Path) -> str:
-    img = Image.open(screenshot_path)
-    return str(imagehash.average_hash(img))
-
-
-def should_notify_modal(
-    screenshot_path: Path, ttl_seconds: int = CACHE_TTL_SECONDS
-) -> bool:
-    """
-    Check if a modal screenshot should trigger a notification.
-    Returns True if this is a new modal, False if already seen.
-    """
+def should_notify_modal(key: str, ttl_seconds: int = CACHE_TTL_SECONDS) -> bool:
     try:
-        screenshot_hash = perceptual_hash(screenshot_path)
-        is_seen = check_and_remember(screenshot_hash, ttl_seconds)
-        return not is_seen
+        return not check_and_remember(key, ttl_seconds)
     except Exception as e:
-        logging.error(f"Error checking modal screenshot: {e}")
-        # On error, notify just to be safe
+        logging.error(f"Error checking modal {key}: {e}")
         return True

@@ -1,12 +1,9 @@
 import os
 import sys
 import weakref
-from typing import Optional, Type
+from typing import Optional, Self, Type
 
 from playwright.sync_api import Page, Response, sync_playwright
-
-# Native in 3.11 (https://peps.python.org/pep-0673/)
-from typing_extensions import Self
 
 from notify import Notifier
 from src import PROJECT_ROOT, logging

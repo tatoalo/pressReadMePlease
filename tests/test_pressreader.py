@@ -7,9 +7,12 @@ from src.chromium import Chromium
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from src.pressreader import (
+    is_sign_in_response,
+    login_pressreader,
     logout_pressreader,
     subscribe_to_login_event,
     verify_execution_flow,
+    wait_for_login_outcome,
 )
 from src.utilities import (
     should_execute_flow,
@@ -26,48 +29,113 @@ class TestPressreader(TestCase):
         self.page = self.chromium.context.pages[0]
         self.page.goto("https:///www.google.com")
 
+    def test_sign_in_endpoints_are_recognised(self):
+        sign_in_urls = (
+            "https://ingress.pressreader.com/services/auth/Signin",
+            "https://www.pressreader.com/authentication/v1/signIn",
+            "https://www.pressreader.com/Authentication/SignIn?returnUrl=%2Fcatalog",
+        )
+        for url in sign_in_urls:
+            with self.subTest(url=url):
+                assert is_sign_in_response(mock.Mock(url=url)) is True
+
+        other_urls = (
+            "https://www.pressreader.com/catalog",
+            "https://www.pressreader.com/signin-help",
+            "https://ingress.pressreader.com/services/auth/Signout",
+        )
+        for url in other_urls:
+            with self.subTest(url=url):
+                assert is_sign_in_response(mock.Mock(url=url)) is False
+
     @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
-    @mock.patch("src.pressreader.sys.exit")
-    def test_access_forbidden_login_is_captured(
-        self, system_exit_mock, clean_mock, global_notifier_mock
+    def test_access_forbidden_sign_in_is_recorded(
+        self, chromium_mock, global_notifier_mock
     ):
-        global_notifier_mock.disabled = False
-        notifier_send_message_argument = "notifier_send_message_has_been_called"
-        system_exit_mock.return_value = "system_exit_message"
-        clean_mock.clean.return_value = "mocking clean call"
+        sign_in_urls = (
+            "https://ingress.pressreader.com/services/auth/Signin",
+            "https://www.pressreader.com/authentication/v1/signIn",
+        )
+        for url in sign_in_urls:
+            self.page.route(
+                url, lambda route: route.fulfill(status=HTTPStatus.FORBIDDEN)
+            )
 
-        global_notifier_mock.send_message.return_value = notifier_send_message_argument
-        mocked_resource_url = "https://www.example.com/Authentication/SignIn"
+        sign_in_statuses = subscribe_to_login_event(self.page)
+        for url in sign_in_urls:
+            self.page.goto(url)
 
+        assert sign_in_statuses == [HTTPStatus.FORBIDDEN, HTTPStatus.FORBIDDEN]
+        global_notifier_mock.send_message.assert_not_called()
+        chromium_mock.clean.assert_not_called()
+
+    def test_access_forbidden_not_recorded_with_different_endpoint(self):
         self.page.route(
-            "**/Authentication/SignIn",
-            lambda route: route.fulfill(status=HTTPStatus.FORBIDDEN),
+            "**/catalog", lambda route: route.fulfill(status=HTTPStatus.FORBIDDEN)
         )
 
-        subscribe_to_login_event(self.page)
-        self.chromium.visit_site(page=self.page, url=mocked_resource_url)
+        sign_in_statuses = subscribe_to_login_event(self.page)
+        self.page.goto("https://www.pressreader.com/catalog")
 
-        assert len(global_notifier_mock.send_message.call_args_list) == 1
+        assert sign_in_statuses == []
+
+    @mock.patch("src.pressreader.LOGIN_OUTCOME_TIMEOUT", 500)
+    @mock.patch("src.pressreader.NOTIFIER")
+    @mock.patch("src.pressreader.chromium")
+    def test_login_outcome_exits_when_sign_in_was_forbidden(
+        self, chromium_mock, global_notifier_mock
+    ):
+        events = mock.Mock()
+        events.attach_mock(global_notifier_mock.send_message, "send_message")
+        events.attach_mock(chromium_mock.clean, "clean")
+        self.page.set_content("<div>Something went wrong</div>")
+
+        with self.assertRaises(SystemExit) as raised:
+            wait_for_login_outcome(self.page, [HTTPStatus.FORBIDDEN])
+
+        assert raised.exception.code == "Access denied to PressReader!"
+        global_notifier_mock.send_message.assert_called_once()
         assert (
-            "access denied"
-            in str(global_notifier_mock.send_message.call_args_list[0]).lower()
+            "Access denied to PressReader"
+            in global_notifier_mock.send_message.call_args.args[0]
         )
-        assert global_notifier_mock.send_message.called
+        assert [name for name, _, _ in events.mock_calls] == ["send_message", "clean"]
+        chromium_mock.clean.assert_called_once_with(debug_trace=True)
 
     @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
-    def test_access_forbidden_not_captured_with_different_endpoint(
-        self, clean_mock, global_notifier_mock
+    def test_login_outcome_continues_on_forbidden_sign_in_when_signed_in(
+        self, chromium_mock, global_notifier_mock
     ):
-        global_notifier_mock.disabled = False
-        clean_mock.clean.return_value = "mocking clean call"
-        resource_url_not_routed = "https://www.example.com/ThisIsGoingToBeA404"
+        self.page.set_content("<span class='userphoto-title'>AB</span>")
 
-        subscribe_to_login_event(self.page)
-        self.chromium.visit_site(page=self.page, url=resource_url_not_routed)
+        with self.assertLogs(level="WARNING") as logs:
+            wait_for_login_outcome(self.page, [HTTPStatus.OK, HTTPStatus.FORBIDDEN])
 
-        assert global_notifier_mock.called is False
+        assert "403" in logs.output[0]
+        global_notifier_mock.send_message.assert_not_called()
+        chromium_mock.clean.assert_not_called()
+
+    @mock.patch("src.pressreader.wait_for_login_outcome")
+    def test_login_subscribes_to_sign_in_responses_before_submitting(
+        self, wait_for_login_outcome_mock
+    ):
+        page = mock.Mock()
+        stay_signed_in_checkbox = mock.Mock()
+        stay_signed_in_checkbox.is_checked.return_value = False
+        submit_button = mock.Mock()
+        page.attach_mock(submit_button, "submit_button")
+        page.wait_for_selector.side_effect = [stay_signed_in_checkbox, submit_button]
+
+        login_pressreader.__wrapped__(page, ("username", "password"))
+
+        call_names = [name for name, _, _ in page.mock_calls]
+        assert call_names.index("on") < call_names.index("submit_button.click")
+        assert page.on.call_args.args[0] == "response"
+        sign_in_statuses = wait_for_login_outcome_mock.call_args.args[1]
+        wait_for_login_outcome_mock.assert_called_once_with(page, sign_in_statuses)
+        assert sign_in_statuses == []
 
     @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
@@ -86,6 +154,8 @@ class TestPressreader(TestCase):
         self.chromium.visit_site(page=self.page, url=mocked_resource_url)
 
         assert verify_execution_flow(self.page) == (True, 2, None)
+        global_notifier_mock.send_message.assert_not_called()
+        global_notifier_mock.screenshot_client.take_screenshot.assert_not_called()
 
     @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
@@ -123,6 +193,8 @@ class TestPressreader(TestCase):
 
         assert result[0] is True
         assert result[1] == 2
+        global_notifier_mock.send_message.assert_not_called()
+        global_notifier_mock.screenshot_client.take_screenshot.assert_not_called()
 
     @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
@@ -148,6 +220,7 @@ class TestPressreader(TestCase):
         assert result[0] is False
         assert result[1] is None
         assert "Could not find free access time element" in result[2]
+        global_notifier_mock.send_message.assert_not_called()
 
     @mock.patch("src.pressreader.NOTIFIER")
     @mock.patch("src.pressreader.chromium")
@@ -166,21 +239,30 @@ class TestPressreader(TestCase):
         )
         page_locator_mock.return_value.first.wait_for.return_value = None
 
-        result = verify_execution_flow(self.page)
+        with self.assertLogs(level="WARNING") as logs:
+            result = verify_execution_flow(self.page)
 
-        assert result[0] is True
-        assert result[1] == 2
+        assert result == (True, 2, None)
+        assert "could not be confirmed" in logs.output[0]
+        global_notifier_mock.send_message.assert_called_once_with(
+            "PressReader access could not be confirmed: "
+            "signed in, but no countdown or sponsor banner found"
+        )
+        global_notifier_mock.screenshot_client.take_screenshot.assert_called_once_with(
+            self.page, "unconfirmed_access"
+        )
+        global_notifier_mock.screenshot_client.remove_screenshot.assert_called_once()
 
     @mock.patch("src.pressreader.Page.wait_for_selector")
     @mock.patch("src.pressreader.Page.locator")
     def test_logout_uses_locator_clicks(
         self, page_locator_mock, page_wait_for_selector_mock
     ):
+        hotspot_dialog_locator = mock.Mock()
         first_locator = mock.Mock()
-        first_locator.click.return_value = None
         second_locator = mock.Mock()
-        second_locator.click.return_value = None
         page_locator_mock.side_effect = [
+            mock.Mock(first=hotspot_dialog_locator),
             mock.Mock(first=first_locator),
             mock.Mock(first=second_locator),
         ]
@@ -188,7 +270,74 @@ class TestPressreader(TestCase):
         logout_pressreader(self.page)
 
         page_wait_for_selector_mock.assert_not_called()
-        assert page_locator_mock.call_count == 2
+        assert page_locator_mock.call_count == 3
+        hotspot_dialog_locator.click.assert_called_once_with(timeout=2000)
+        first_locator.click.assert_called_once_with(timeout=5000)
+        second_locator.click.assert_called_once_with(timeout=5000)
+
+    @mock.patch("src.pressreader.Page.locator")
+    def test_logout_continues_when_hotspot_dialog_is_absent(self, page_locator_mock):
+        hotspot_dialog_locator = mock.Mock()
+        hotspot_dialog_locator.click.side_effect = PlaywrightTimeoutError(
+            "Timeout 2000ms exceeded."
+        )
+        first_locator = mock.Mock()
+        second_locator = mock.Mock()
+        page_locator_mock.side_effect = [
+            mock.Mock(first=hotspot_dialog_locator),
+            mock.Mock(first=first_locator),
+            mock.Mock(first=second_locator),
+        ]
+
+        logout_pressreader(self.page)
+
+        first_locator.click.assert_called_once_with(timeout=5000)
+        second_locator.click.assert_called_once_with(timeout=5000)
+
+    @mock.patch("src.pressreader.NOTIFIER")
+    @mock.patch("src.pressreader.chromium")
+    def test_login_outcome_succeeds_when_signed_in(
+        self, chromium_mock, global_notifier_mock
+    ):
+        self.page.set_content("<span class='userphoto-title'>AB</span>")
+
+        wait_for_login_outcome(self.page, [HTTPStatus.OK])
+
+        chromium_mock.clean.assert_not_called()
+        global_notifier_mock.send_message.assert_not_called()
+
+    @mock.patch("src.pressreader.NOTIFIER")
+    @mock.patch("src.pressreader.chromium")
+    def test_login_outcome_exits_on_wrong_credentials(
+        self, chromium_mock, global_notifier_mock
+    ):
+        self.page.set_content("<div class='infomsg'>Invalid username or password</div>")
+
+        with self.assertRaises(SystemExit):
+            wait_for_login_outcome(self.page, [])
+
+        chromium_mock.clean.assert_called_once_with(debug_trace=True)
+        global_notifier_mock.send_message.assert_called_once_with(
+            "Wrong Pressreader credentials!"
+        )
+
+    @mock.patch("src.pressreader.LOGIN_OUTCOME_TIMEOUT", 500)
+    @mock.patch("src.pressreader.NOTIFIER")
+    @mock.patch("src.pressreader.chromium")
+    def test_login_outcome_fails_when_sign_in_never_completes(
+        self, chromium_mock, global_notifier_mock
+    ):
+        self.page.set_content(
+            "<div class='infomsg'>Reconnect when access expires</div>"
+            "<div>This issue brought to you by</div>"
+        )
+
+        with self.assertRaises(Exception) as raised:
+            wait_for_login_outcome(self.page, [HTTPStatus.OK])
+
+        assert "sign-in did not complete" in str(raised.exception)
+        global_notifier_mock.send_message.assert_not_called()
+        chromium_mock.clean.assert_not_called()
 
 
 class TestUtilities(TestCase):

@@ -3,7 +3,7 @@
 
 # pressReadMePlease
 
-🦄 Automagically🪄 refresh PressReader weekly token.
+🦄 Automagically🪄 refresh PressReader access every two days.
 (`3.11` <= 🐍 <= `3.14`)
 <br/>
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
@@ -14,7 +14,7 @@
 
 </div>
 
-Using MLOL and PressReader to read newspapers from all over the world is pretty handy, if you use the mobile apps only, though, it may become pretty painful to remember once every week to manually login into MLOL and then PressReader from the desktop version so that PressReader doesn't throw you out of their system.
+Using MLOL and PressReader to read newspapers from all over the world is pretty handy, if you use the mobile apps only, though, it may become pretty painful to remember every couple of days to manually login into MLOL and then PressReader from the desktop version so that PressReader doesn't throw you out of their system.
 
 With pressReadMePlease you can automate this, **set it and forget it!**.
 
@@ -31,19 +31,18 @@ docker pull tatoalo/pressreader-automation:latest
 and subsequently launch the container with:
 
 ```
-docker run --name pressreader -itd --restart unless-stopped -v config.toml:/src/config.toml tatoalo/pressreader-automation
+docker run --name pressreader -itd --restart unless-stopped -v "$(pwd)/config.toml:/src/config.toml" tatoalo/pressreader-automation
 ```
 
 #### Docker Compose
 
 ```yaml
-version: "3.8"
 services:
   pressreadmeplease:
     image: tatoalo/pressreader-automation
     restart: unless-stopped
     volumes:
-      - /path/to/my/configuration/file:/config/file
+      - /path/to/my/config.toml:/src/config.toml
 ```
 
 ### Authentication Data

@@ -9,8 +9,9 @@ COPY --chmod=777 entrypoint.sh /usr/local/bin
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     python3 \
-    python3-pip \
     python3-venv \
+    ca-certificates \
+    libatomic1 \
     curl \
     cron \
     tzdata && \
@@ -27,8 +28,8 @@ RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml uv.lock /
-RUN uv pip install --upgrade pip setuptools wheel && \
-    uv pip install -r /pyproject.toml && \
+RUN UV_PROJECT_ENVIRONMENT=/opt/venv uv sync --project / --locked --no-dev \
+    --no-install-project --no-python-downloads --no-cache && \
     python -m playwright install chromium && \
     python -m playwright install-deps chromium && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
