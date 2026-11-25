@@ -1,5 +1,16 @@
 # Changelog
 
+## [v4.0.0] - 2026-11-25
+
+- ⚡ 4.2x faster happy path
+- 🚨 Fixed a false success (failure as renewal)
+- 🔧 Fixed MLOL wrong-credentials detection
+- 🔧 Fixed MLOL and PressReader logout
+- 🔧 Fixed PressReader `403` detection on the current sign-in endpoints
+- 🔔 MLOL library messages are notified again
+- 🔔 Heads-up notification when the session is signed in but access cannot be confirmed
+- 🧯 Telegram requests now time out and a failed notification never aborts the flow
+
 ## [v3.3.1] - 2026-10-24
 
 - Maintenance updates

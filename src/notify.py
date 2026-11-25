@@ -2,6 +2,8 @@ from pathlib import Path
 import requests
 import logging
 
+REQUEST_TIMEOUT_SECONDS = 30
+
 
 class Notifier:
     def __init__(
@@ -18,6 +20,7 @@ class Notifier:
             self.disabled = True
         self.chat_id = chat_id
         self.screenshot_client = None
+        self._token = token
 
     def set_screenshot_client(self, client):
         self.screenshot_client = client
@@ -25,21 +28,33 @@ class Notifier:
     def send_message(self, message: str):
         if self.disabled is False:
             payload = {"chat_id": self.chat_id, "text": message}
-            requests.post(self.api_url + "sendMessage", data=payload)
+            self._post("sendMessage", data=payload)
 
     def send_image(self, image_location: Path):
         if self.disabled is False and self.screenshot_client:
-            payload = {"chat_id": self.chat_id}
-            files = [("photo", open(image_location, "rb"))]
-            requests.post(self.api_url + "sendPhoto", data=payload, files=files)
+            self._post_file("sendPhoto", "photo", image_location)
         elif not self.screenshot_client and not self.disabled:
             logging.warning(
                 "Notifier.send_image called but screenshot_client is not set."
             )
-            pass
 
     def send_binary(self, binary_path: Path):
         if self.disabled is False:
-            payload = {"chat_id": self.chat_id}
-            files = [("document", open(binary_path, "rb"))]
-            requests.post(self.api_url + "sendDocument", data=payload, files=files)
+            self._post_file("sendDocument", "document", binary_path)
+
+    def _post_file(self, method: str, field: str, path: Path):
+        with open(path, "rb") as file:
+            self._post(method, data={"chat_id": self.chat_id}, files=[(field, file)])
+
+    def _post(self, method: str, **kwargs):
+        try:
+            requests.post(
+                self.api_url + method, timeout=REQUEST_TIMEOUT_SECONDS, **kwargs
+            )
+        except requests.RequestException as e:
+            logging.error(f"Telegram {method} request failed: {self._redact(str(e))}")
+
+    def _redact(self, text: str) -> str:
+        if self._token:
+            return text.replace(self._token, "<redacted>")
+        return text

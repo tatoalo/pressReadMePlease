@@ -1,6 +1,4 @@
-import os
 import sys
-from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 from playwright.sync_api import Page, TimeoutError
@@ -9,7 +7,6 @@ from chromium import Chromium
 from error_handling import handle_errors
 from src import (
     NOTIFIER,
-    PROJECT_ROOT,
     WARNING_FAILED_LOGIN_TEXT_ELEMENT,
     cache,
     logging,
@@ -18,8 +15,14 @@ from src import (
 chromium = None
 
 MLOL_LOGIN_PATH = "/login/login"
+MLOL_ALERT_PATH = "/alert"
 MLOL_LOGIN_FORM_SELECTOR = "#Username"
 MLOL_LISTING_SELECTOR = "a[href*='/media/details/']"
+MLOL_LOGOUT_SELECTOR = "a[href*='logout']"
+
+MLOL_MESSAGE_MODAL_SELECTOR = "#modal-communicationcontainer .modal[id^='Message']"
+MLOL_MESSAGE_MODAL_TIMEOUT = 3000
+MLOL_MESSAGE_TEXT_LIMIT = 500
 
 ALTCHA_GATE_SELECTOR = "#altcha-gate"
 ALTCHA_NOCOOKIE_SELECTOR = "#altcha-nocookie:not([hidden])"
@@ -90,14 +93,16 @@ def login_form_is_available(page: Page) -> bool:
 
 
 def failed_login_procedure(page: Page):
-    try:
-        warning_failed_login = page.text_content(".page-title", timeout=5000).lower()
-        if WARNING_FAILED_LOGIN_TEXT_ELEMENT in warning_failed_login:
-            chromium.clean(debug_trace=True)
-            NOTIFIER.send_message("Wrong MLOL credentials!")
-            sys.exit("Login failed, please check your MLOL credentials!")
-    except TimeoutError:
-        pass
+    if login_was_rejected(page):
+        chromium.clean(debug_trace=True)
+        NOTIFIER.send_message("Wrong MLOL credentials!")
+        sys.exit("Login failed, please check your MLOL credentials!")
+
+
+def login_was_rejected(page: Page) -> bool:
+    if urlparse(page.url).path.startswith(MLOL_ALERT_PATH):
+        return True
+    return WARNING_FAILED_LOGIN_TEXT_ELEMENT in page.title().lower()
 
 
 @handle_errors
@@ -199,8 +204,11 @@ def dismiss_htmx_modal(page: Page, name: str, container: str):
         f"{container} button.close",
     )
     for selector in close_selectors:
+        close_button = page.locator(selector).first
+        if close_button.count() == 0:
+            continue
         try:
-            page.locator(selector).first.click(timeout=2000)
+            close_button.click(timeout=2000)
             logging.debug(f"{name.capitalize()} modal dismissed via {selector}")
             break
         except TimeoutError:
@@ -222,40 +230,39 @@ def dismiss_htmx_modal(page: Page, name: str, container: str):
 
 def verify_modal_presence(page: Page):
     try:
-        page.wait_for_selector("#FavModal", timeout=3000)
-        logging.debug("Modal found on MLOL entry")
-
-        # Caching check
-        temp_screenshot_path = Path(PROJECT_ROOT) / "modal_temp.png"
-        page.screenshot(path=temp_screenshot_path)
-
-        # Check if we've seen this modal before
-        if cache.should_notify_modal(temp_screenshot_path):
-            logging.info("New modal detected - sending notification")
-            NOTIFIER.send_message("Modal found in MLOL")
-            NOTIFIER.send_image(image_location=temp_screenshot_path)
-        else:
-            logging.debug("Modal already seen - skipping notification")
-
-        # Clean up temporary screenshot
-        if temp_screenshot_path.exists():
-            os.remove(temp_screenshot_path)
-
-        # Retrieving modal dismissal button
-        modal_dismissal_button = page.locator(
-            "//div[@class='modal-footer']/button[@data-dismiss='modal']"
+        message_modal = page.wait_for_selector(
+            MLOL_MESSAGE_MODAL_SELECTOR,
+            state="visible",
+            timeout=MLOL_MESSAGE_MODAL_TIMEOUT,
         )
-        modal_dismissal_button.click()
-        logging.debug("Modal dismissed correctly!")
-
     except TimeoutError:
-        # No modal found
-        pass
+        return
+
+    message_id = message_modal.get_attribute("id")
+    if not cache.should_notify_modal(message_id):
+        logging.debug(f"MLOL message {message_id} already notified")
+        return
+
+    logging.info(f"New MLOL message {message_id} - sending notification")
+    message_text = summarize_modal_text(message_modal.inner_text())
+    NOTIFIER.send_message(f"New MLOL library message:\n{message_text}")
+    NOTIFIER.screenshot_client.take_screenshot(page, "mlol_message")
+    NOTIFIER.screenshot_client.remove_screenshot()
+
+
+def summarize_modal_text(text: str) -> str:
+    collapsed_text = " ".join(text.split())
+    if len(collapsed_text) <= MLOL_MESSAGE_TEXT_LIMIT:
+        return collapsed_text
+    return collapsed_text[: MLOL_MESSAGE_TEXT_LIMIT - 1].rstrip() + "…"
 
 
 def logout_mlol(page: Page):
     try:
-        logout_item = page.wait_for_selector("a[href*='logout']", timeout=5000)
-        logout_item.click()
+        logout_href = page.locator(MLOL_LOGOUT_SELECTOR).first.get_attribute(
+            "href", timeout=5000
+        )
+        if logout_href:
+            page.goto(urljoin(page.url, logout_href))
     except TimeoutError:
-        pass
+        logging.debug("MLOL logout did not complete")

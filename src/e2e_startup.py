@@ -3,6 +3,7 @@
 E2E startup test script that validates the application and checks version information.
 """
 
+import re
 import sys
 from importlib.util import find_spec
 from pathlib import Path
@@ -11,6 +12,17 @@ import requests
 import tomlkit
 
 PROJECT_ROOT = Path(__file__).parent.parent
+
+VERSION_PATTERN = re.compile(r"v?([0-9]+(?:\.[0-9]+)*)")
+
+
+def parse_version(version: str) -> tuple[int, ...] | None:
+    if not isinstance(version, str):
+        return None
+    match = VERSION_PATTERN.fullmatch(version.strip())
+    if match is None:
+        return None
+    return tuple(int(part) for part in match.group(1).split("."))
 
 
 def get_current_version() -> str:
@@ -23,12 +35,12 @@ def get_current_version() -> str:
 def get_latest_version_from_github() -> str | None:
     try:
         url = "https://api.github.com/repos/tatoalo/pressReadMePlease/tags"
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, params={"per_page": 100}, timeout=10)
         if response.status_code == 200:
-            tags = response.json()
-            if tags and len(tags) > 0:
-                tag_name = tags[0].get("name", "").lstrip("v")
-                return tag_name
+            versions = [parse_version(tag.get("name")) for tag in response.json()]
+            versions = [version for version in versions if version is not None]
+            if versions:
+                return ".".join(str(part) for part in max(versions))
 
         return None
     except Exception as e:
@@ -132,9 +144,13 @@ def main() -> int:
     if latest_version:
         print(f"📋 Latest available version: {latest_version}")
 
-        if current_version == latest_version:
+        current = parse_version(current_version)
+        latest = parse_version(latest_version)
+        if current is None:
+            print(f"⚠️  Could not compare unparseable version {current_version}")
+        elif current == latest:
             print("✓ You are running the latest version!")
-        elif current_version > latest_version:
+        elif current > latest:
             print("ℹ️  You are running a newer version than the latest release")
         else:
             print(f"⚠️  A newer version is available: {latest_version}")
